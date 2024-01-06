@@ -1,19 +1,20 @@
 import express from "express"
-import dottenv from "dotenv"
-import bodyParser from "body-parser"
+import dotenv from "dotenv"
 import { dbConnect } from "./db/dbConnect.js"
+import adminRoutes from "./routers/adminRoutes.js"
 
-const app=express()
-dottenv.config()
-let dburl=process.env.DBURL
-let dbname=process.env.DBNAME
-dbConnect(dburl,dbname)
-app.use(bodyParser.urlencoded({extended:false}))
-const port =process.env.PORT
+const app = express()
+dotenv.config()
+let dburl = process.env.DBURL
+let dbname = process.env.DBNAME
+dbConnect(dburl, dbname)
+
+app.use(express.json())
+const port = process.env.PORT
+
+app.use("/admin", adminRoutes)
 
 
- app.use("/user",userRouter)
-
-app.listen(port,()=>{
-    console.log(`server ${port}`)
+app.listen(port, () => {
+    console.log(`server started at port number  ${port}`)
 })

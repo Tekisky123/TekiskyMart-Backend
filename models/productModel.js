@@ -1,28 +1,24 @@
 import mongoose from "mongoose";
 
 
+
 const productSchema = new mongoose.Schema({
-    productName: {
-      type: String,
-      required: true,
-    },
-    description: {
-      type: String,
-      required: true,
-    },
-    price: {
-      type: Number,
-      required: true,
-    },
-    qty:{Number,
-    required:true
-    },
-    imageURL: {
-        type: String, // Assuming the image URL will be a string
-        required: true,
-      },
-  });
+  productId : {type : String}, //auto generate 
+  productCategory: { type: String, required: true },
+  productName: { type: String, required: true },
+  productType: { type: String, required: true },
+  productBrand: { type: String, required: true },
+  description: { type: String, required: true },
+  availableStockQty: { type: Number, required: true }, // Corrected definition for the qty field
+  availablePackQty : {type : Array},
+  //varity: { type: String, required: true },
+  mrp: { type: Number, required: true },
+  offerPrice: { type: String, required: true },
+  createdby: { type: String, required: true },
+  imageURL: { type: String, required: true }
 
-const Product = mongoose.model('Product', productSchema);
+}, { timestamps: true });
 
-export default Product
+const ProductModel = mongoose.model('Product', productSchema);
+
+export default ProductModel;
