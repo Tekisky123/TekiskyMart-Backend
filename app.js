@@ -2,6 +2,8 @@ import express from "express"
 import dotenv from "dotenv"
 dotenv.config()
 import { dbConnect } from "./db/dbConnect.js"
+import orderRoute from "./routers/orderRouter.js";
+import productRoute from "./routers/productRouter.js";
 dotenv.config();
 const app=express()
 let dburl=process.env.DBURL
@@ -11,8 +13,8 @@ app.use(express.json())
 const port =process.env.PORT
 
 
- //app.use("/user",userRouter)
-
+ app.use("/user",orderRoute)
+app.use("/product",productRoute)
 app.listen(port,()=>{
     console.log(`server ${port}`)
 })
