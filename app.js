@@ -13,7 +13,7 @@ app.use(express.json())
 const port =process.env.PORT
 
 
- app.use("/user",orderRoute)
+ app.use("/order",orderRoute)
 app.use("/product",productRoute)
 app.listen(port,()=>{
     console.log(`server ${port}`)
