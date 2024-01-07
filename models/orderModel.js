@@ -2,7 +2,8 @@ import mongoose from "mongoose";
 
 const orderSchema = new mongoose.Schema({
 
-
+    orderId:{type:String,required:true},
+    customerName:{type:String,required:true},
     mobileNumber:{type:String,required:true},
     address:{type:String,required:true},
     products: [
@@ -24,9 +25,14 @@ const orderSchema = new mongoose.Schema({
     },
     status: {
       type: String,
-      enum: ['pending', 'processing', 'completed', 'cancelled'],
-      default: 'pending',
+      required: true,
+      enum: ['new', 'order', 'dispatch', 'delivered'],
+      default: 'new',
     },
+    timestamps: {
+      order_date: { type: Date, required: true },
+      delivery_date: { type: Date }
+  }
 
     // Add more fields as needed (e.g., shipping information, payment details, etc.)
   }, {
