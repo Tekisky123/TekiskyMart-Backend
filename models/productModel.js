@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const productSchema = new mongoose.Schema(
   {
-    productId: { type: String }, //auto generate
+    productId: { type: String,required:true }, //auto generate
     productCategory: { type: String, required: true },
     productName: { type: String, required: true },
     productType: { type: String, required: true },
