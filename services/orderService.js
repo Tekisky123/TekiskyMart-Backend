@@ -1,69 +1,65 @@
 import Order from "../models/orderModel.js";
 
-let saveOrder = async (req, res) => {
+let saveOrder = async (data) => {
   try {
-    let { mobileNumber, address, products, totalAmount, status } = req.body;
-    let order = new Order({
-      mobileNumber,
-      address,
-      products,
-      totalAmount,
-      status,
-    });
+    //let { orderId,customerName,mobileNumber, address, products, totalAmount, status,timestamps } = data;
+    let order = new Order({...data,status:"order"});
     let result = await order.save();
     console.log(order);
     if (result) {
-      res.send("success");
+      return 'successfull';
     }
   } catch (error) {
-    console.log("error in service");
-    console.log(error);
+    console.error("Error adding order:", error);
+    throw new Error("Failed to add order");
   }
-  console.log(req.body);
+  console.log(req);
 };
 
-let getAllOrders = async (req, res) => {
+let getAllOrders = async () => {
   try {
     let allOrders = await Order.find();
     console.log(allOrders);
-    res.status(200).send(allOrders);
+    return allOrders;
   } catch (err) {
-    console.log(err);
-    res.status(500).send("Internal Server Error");
+    console.error('Error in fetching orders:', err);
+    throw new Error('Error in fetching orders');
   }
 };
 
-let getOrderById = async (req, res) => {
+let getOrderById = async (id) => {
   try {
-    console.log(req.params.id);
-    let order = await Order.findById(req.params.id);
-    res.status(200).send(order);
+    console.log(id);
+    let order = await Order.findById(id);
+    return order;
   } catch (err) {
-    console.log(err);
-    res.status(500).send("Internal Server Error");
+    console.error('Error in fetching order:', err);
+    throw new Error('Error in fetching order');
+    
   }
 };
 
-let deleteOrderById = async (req, res) => {
+let deleteOrderById = async (id) => {
   try {
-    console.log(req.params.id);
-    let orderDeleted = await Order.findByIdAndDelete(req.params.id);
-    res.status(200).send("deleted successfully");
+    //console.log(req.params.id);
+    let orderDeleted = await Order.findByIdAndDelete(id);
+    return orderDeleted;
   } catch (err) {
-    console.log(err);
-    res.status(500).send("Internal Server error");
+    console.error('Error in deleting the  orders:', err);
+        throw new Error('Error in deleting orders');
   }
 };
 
-let updateOrderById = async (req, res) => {
+let updateOrderById = async (id,updateData) => {
   try {
-    console.log(req.params.id);
-    let orderUpdated = await Order.findByIdAndUpdate(req.params.id);
-    res.status(200).send("updated succsfully");
+   // console.log(req.params.id);
+    let orderUpdated = await Order.findByIdAndUpdate(id, updateData, { new: true });
+    return orderUpdated;
   } catch (err) {
-    console.log(err);
-    res.status(500).send("Internal Server error");
+    console.error('Error in updating the  order:', err);
+    throw new Error('Error in fetching order');
   }
 };
+
 
 export { saveOrder, getAllOrders, getOrderById, deleteOrderById,updateOrderById};
