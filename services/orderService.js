@@ -3,7 +3,7 @@ import Order from "../models/orderModel.js";
 let saveOrder = async (data) => {
   try {
     //let { orderId,customerName,mobileNumber, address, products, totalAmount, status,timestamps } = data;
-    let order = new Order(data);
+    let order = new Order({...data,status:"order"});
     let result = await order.save();
     console.log(order);
     if (result) {
