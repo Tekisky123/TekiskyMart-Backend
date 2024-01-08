@@ -6,7 +6,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 const adminRoutes = express.Router()
 
 
-adminRoutes.post('/addproduct',upload.single('file'),addProduct)
+adminRoutes.post('/addproduct',upload.array('files',5),addProduct)
 adminRoutes.get('/getproduct',getProduct)
 adminRoutes.put('/update/:id',updateProduct)
 adminRoutes.get('/delete/:id',deleteProduct)

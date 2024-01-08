@@ -35,32 +35,30 @@ aws.config.update({
 
 // createing prodact in DB 
 export const addProduct = async (req, res) => {
-   let url;
+   let url=[];
     try {
         console.log(req.body)
-        console.log(req.file,"file");
-    if(req.file!=undefined){
+        console.log(req.files,"file");
+    if(req.files!=undefined){
 
       // Assuming req.files is an array of files
     //   const imageProduct = await Promise.all(req.files.map(file => uploadFile(file)));
     //   console.log("imageProduct  ===>", imageProduct);
-    const imageProduct = await uploadFile(req.file);
-            console.log('imageProduct ===>', imageProduct);
-            // const uploadedImage = {
-            //     imageUrl: imageProduct.Location,
-            //     imageName: imageProduct.Key,
-            // };
-            // console.log(uploadedImage);
+    const imageProducts = await Promise.all(req.files.map(file => uploadFile(file)));
+            console.log('imageProduct ===>', imageProducts);
             
+            const uploadedImagesUrl = imageProducts.map(file => file.Location);
 
 
-      console.log('Uploaded Image:', imageProduct);
-      const uploadedImagesUrl = {
-          imageUrl: imageProduct.Location,
-          imageName: imageProduct.Key
-      }
-      console.log(uploadedImagesUrl);
-      url=uploadedImagesUrl.imageUrl;
+      console.log('Uploaded Image:', imageProducts);
+    //   const uploadedImagesUrl = {
+    //       imageUrl: imageProduct.Location,
+    //       imageName: imageProduct.Key
+    //   }
+
+
+      console.log("images url",uploadedImagesUrl);
+      url=uploadedImagesUrl
       
     }
     console.log("url for s3 bucket image=======>",url);
