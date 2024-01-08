@@ -14,7 +14,7 @@ const productSchema = new mongoose.Schema(
     mrp: { type: Number, required: true },
     offerPrice: { type: String, required: true },
     createdby: { type: String, required: true },
-    imageURL: { type: String, required: true },
+    imageURL: { type: [String], required: true },
   },
   { timestamps: true }
 );
