@@ -66,4 +66,4 @@ let updateOrderById = async (req, res) => {
   }
 };
 
-export { saveOrder, getAllOrders, getOrderById, deleteOrderById,updateOrderById};
+export { saveOrder, getAllOrders, getOrderById, deleteOrderById, updateOrderById };
