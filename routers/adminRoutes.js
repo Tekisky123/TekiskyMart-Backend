@@ -1,4 +1,4 @@
-import { addProduct, deleteProduct, getProduct, updateProduct, } from "../controllers/adminContoller.js";
+import { addProduct, deleteProduct, getProduct, updateProduct,getOneProduact } from "../controllers/adminContoller.js";
 import  express from "express";
 import multer, { memoryStorage } from "multer"
 const upload = multer({ storage: multer.memoryStorage() });
@@ -10,5 +10,6 @@ adminRoutes.post('/addproduct',upload.array('files',5),addProduct)
 adminRoutes.get('/getproduct',getProduct)
 adminRoutes.put('/update/:id',updateProduct)
 adminRoutes.get('/delete/:id',deleteProduct)
+adminRoutes.get('/getoneproduct/:id',getOneProduact)
 
 export default adminRoutes

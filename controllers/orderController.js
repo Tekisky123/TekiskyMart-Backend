@@ -6,12 +6,23 @@ import {
   updateOrderById,
 } from "../services/orderService.js";
 
+import {mongoose} from 'mongoose';
+
+
+
+// Function to generate a unique order ID
+const generateOrderID = () => {
+  return new mongoose.Types.ObjectId().toHexString();
+};
+
 
 // createing order in DB
 export const addOrder = async (req, res) => {
+
+  const uniqueOrderID = await generateOrderID();
   try {
-    
-    const status = await saveOrder(req.body);
+
+    const status = await saveOrder({orderId:uniqueOrderID , ...req.body });
 
     if (status === "successfull") {
       res
@@ -40,31 +51,10 @@ export const getAllOrder = async (req, res) => {
       .json({ status: "error", message: "Error in getting orders" });
   }
 };
-
-// export const updateOrder = async (req, res) => {
-//   try {
-//     const id = req.params.id;
-//     const updateOrder = await updateOrderById(id);
-//     res
-//       .status(200)
-//       .json(
-//         {
-//           success: true,
-//           message: "order updated successfully",
-//           order: updateOrder,
-//         },
-//         { new: true }
-//       );
-//   } catch (error) {
-//     res.status(400).json({ success: false, message: error.message });
-//   }
-// };
-
-
 export const updateOrder = async (req, res) => {
   try {
     const id = req.params.id;
-    
+
     // Assuming req.body contains the updated data for the order
     const updateData = req.body;
 
@@ -118,7 +108,7 @@ export const getOrderById1 = async (req, res) => {
     const updateOrder = await getOrderById(id);
     res
       .status(200)
-      .json({ success: true, order:updateOrder });
+      .json({ success: true, order: updateOrder });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

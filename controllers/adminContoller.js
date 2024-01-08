@@ -1,7 +1,7 @@
 
 // import { addProdactSerivces, getProdactServioces, productUpdateService } from "../services/adminServices.js";
 import aws from "aws-sdk"
-import { addProductSerivce, getProductService, productDeleteService, productUpdateService } from "../services/adminServices.js";
+import { addProductSerivce, getOneProduactService, getProductService, productDeleteService, productUpdateService } from "../services/adminServices.js";
 import { updateOrder } from "./orderController.js";
 import dotenv from "dotenv"
 dotenv.config();
@@ -41,29 +41,16 @@ export const addProduct = async (req, res) => {
         console.log(req.files,"file");
     if(req.files!=undefined){
 
-      // Assuming req.files is an array of files
-    //   const imageProduct = await Promise.all(req.files.map(file => uploadFile(file)));
-    //   console.log("imageProduct  ===>", imageProduct);
+
     const imageProducts = await Promise.all(req.files.map(file => uploadFile(file)));
             console.log('imageProduct ===>', imageProducts);
             
             const uploadedImagesUrl = imageProducts.map(file => file.Location);
 
 
-      console.log('Uploaded Image:', imageProducts);
-    //   const uploadedImagesUrl = {
-    //       imageUrl: imageProduct.Location,
-    //       imageName: imageProduct.Key
-    //   }
-
-
-      console.log("images url",uploadedImagesUrl);
-      url=uploadedImagesUrl
       
     }
-    console.log("url for s3 bucket image=======>",url);
-
-        const status = await addProductSerivce(req.body,url);
+        const status = await addProductSerivce(req.body,uploadedImagesUrl  );
 
         if (status === 'successfull') {
             res.status(201).json({success : true , message : "Successfully added product"});
@@ -118,4 +105,16 @@ export const deleteProduct = async (req, res) => {
 }
 
 
+export const getOneProduact =async (req,res) =>{
+    const id = req.params.id
+  try {
+     const getOneProduact = await getOneProduactService(id);
+     res.status(200).json({success : true, getOneProduact:getOneProduact });
+     
+  } catch (error) {
+    console.log('error while getoneProduact catch block')
+    res.status(400).json({ success: false, message: error.message })
+
+  }
+}
 

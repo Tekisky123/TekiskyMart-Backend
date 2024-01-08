@@ -76,3 +76,17 @@ export const productDeleteService = async (id) => {
 
 
 
+
+
+export const getOneProduactService =async (id) =>{
+   
+    try {
+        const OneProduact = await  ProductModel.findOne({_id:id})
+        return OneProduact
+    } catch (error) {
+         return 'error while getting produact '
+    }
+
+
+
+}
