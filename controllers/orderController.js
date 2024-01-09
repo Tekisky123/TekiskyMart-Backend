@@ -6,36 +6,80 @@ import {
   updateOrderById,
 } from "../services/orderService.js";
 
-import {mongoose} from 'mongoose';
-
-
+import { mongoose } from 'mongoose';
+import qs from "querystring";
+import https from "https";
 
 // Function to generate a unique order ID
-const generateOrderID = () => {
-  return new mongoose.Types.ObjectId().toHexString();
+const generateOrderID = async () => {
+  try {
+    return new mongoose.Types.ObjectId().toHexString();
+  } catch (error) {
+    throw new Error("Failed to generate order ID: " + error.message);
+  }
 };
 
+// Function to make the API call
+const makeAPICall = (postData) => {
+  return new Promise((resolve, reject) => {
+    const options = {
+      method: "POST",
+      hostname: "api.alvochat.com",
+      port: null,
+      path: "api.alvochat.com/instance1199/messages/chat",
+      headers: {
+        "content-type": "application/json"
+      }
+    };
 
-// createing order in DB
+    const req = https.request(options, (res) => {
+      let chunks = [];
+
+      res.on("data", (chunk) => {
+        chunks.push(chunk);
+      });
+
+      res.on("end", () => {
+        const body = Buffer.concat(chunks);
+        const responseBody = body.toString();
+        console.log(responseBody); // Log the API response if needed
+        resolve(responseBody); // Resolve the promise with the API response
+      });
+    });
+
+    req.on("error", (error) => {
+      console.error("Error making API request:", error);
+      reject("Error making API request: " + error.message); // Reject the promise with the API error
+    });
+
+    req.write(JSON.stringify(postData)); // Serialize postData to JSON
+    req.end();
+  });
+};
+
 export const addOrder = async (req, res) => {
-
-  const uniqueOrderID = await generateOrderID();
   try {
+    const uniqueOrderID = await generateOrderID();
 
-    const status = await saveOrder({orderId:uniqueOrderID , ...req.body });
+    const status = await saveOrder({ orderId: uniqueOrderID, ...req.body });
 
     if (status === "successfull") {
-      res
-        .status(201)
-        .json({ success: true, message: "Successfully added order" });
+      const apiResponse = await makeAPICall({
+        token: process.env.WHATSAPP_TOKEN,
+        to: 8263964373,
+        body: "WhatsApp API on alvochat.com works good",
+        priority: "",
+        preview_url: "",
+        message_id: ""
+      });
+
+      res.status(201).json({ success: true, message: "Successfully added order", apiResponse });
     } else {
-      res
-        .status(400)
-        .json({ success: false, message: "error while adding the order" });
+      res.status(400).json({ success: false, message: "Error while adding the order" });
     }
   } catch (error) {
     console.error("Error in controller adding order:", error);
-    res.status(500).send("Error in controller adding order");
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 

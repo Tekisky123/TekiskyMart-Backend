@@ -10,7 +10,7 @@ const productSchema = new mongoose.Schema(
     description: { type: String, required: true },
     availableStockQty: { type: Number, required: true }, // Corrected definition for the qty field
     availablePackQty: { type: Array },
-    //varity: { type: String, required: true },
+    packetweight :{type:String,required:true},
     mrp: { type: Number, required: true },
     offerPrice: { type: String, required: true },
     createdby: { type: String, required: true },

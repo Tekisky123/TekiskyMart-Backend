@@ -5,7 +5,6 @@ let saveOrder = async (data) => {
     //let { orderId,customerName,mobileNumber, address, products, totalAmount, status,timestamps } = data;
     let order = new Order({...data,status:"order"});
     let result = await order.save();
-    console.log(order);
     if (result) {
       return 'successfull';
     }
