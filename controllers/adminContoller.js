@@ -47,16 +47,16 @@ export const addProduct = async (req, res) => {
             
             const uploadedImagesUrl = imageProducts.map(file => file.Location);
 
+            const status = await addProductSerivce(req.body,uploadedImagesUrl  );
 
+            if (status === 'successfull') {
+                res.status(201).json({success : true , message : "Successfully added product"});
+            } else {
+                res.status(400).json({success : false , message : "error while adding the product"});
+                }
       
     }
-        const status = await addProductSerivce(req.body,uploadedImagesUrl  );
-
-        if (status === 'successfull') {
-            res.status(201).json({success : true , message : "Successfully added product"});
-        } else {
-            res.status(400).json({success : false , message : "error while adding the product"});
-            }
+        
     } catch (error) {
         console.error('Error in controller adding product:', error);
         res.status(500).send('Error in controller adding product');
