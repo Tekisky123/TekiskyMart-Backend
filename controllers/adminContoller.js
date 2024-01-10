@@ -40,8 +40,7 @@ export const addProduct = async (req, res) => {
         console.log(req.body)
         console.log(req.files,"file");
     if(req.files!=undefined){
-
-
+           
     const imageProducts = await Promise.all(req.files.map(file => uploadFile(file)));
             console.log('imageProduct ===>', imageProducts);
             
@@ -55,6 +54,9 @@ export const addProduct = async (req, res) => {
                 res.status(400).json({success : false , message : "error while adding the product"});
                 }
       
+    }else{
+        throw new Error("please add image");
+        console.log("areeb areeb");
     }
         
     } catch (error) {
