@@ -22,12 +22,13 @@ const generateOrderID = async () => {
 
 // Function to make the API call
 const makeAPICall = (postData) => {
+  postData.messaging_product = "whatsapp";
   return new Promise((resolve, reject) => {
     const options = {
       method: "POST",
       hostname: "graph.facebook.com",
       port: null,
-      path: "/v18.0/me/messages",
+      path: "/v17.0/157849150755483/messages",
       headers: {
         "content-type": "application/json",
         "Authorization":process.env.WHATSAPP_TOKEN
@@ -62,13 +63,19 @@ const makeAPICall = (postData) => {
 export const addOrder = async (req, res) => {
   try {
     const uniqueOrderID = await generateOrderID();
-
+    console.log(req.body.mobileNumber);
     const status = await saveOrder({ orderId: uniqueOrderID, ...req.body });
 
     if (status === "successfull") {
       const apiResponse = await makeAPICall({
-        recipient: { id: "195291223673588" }, // Replace with recipient's WhatsApp ID
-        message: { text: "working api " }, // Replace with the message you want to send
+        to: req.body.mobileNumber, // Replace with recipient's WhatsApp number
+        type: "template",
+        template: {
+          name: "hello_world",
+          language: {
+            code: "en_US"
+          }
+        }
       });
 
       res.status(201).json({ success: true, message: "Successfully added order", apiResponse });
