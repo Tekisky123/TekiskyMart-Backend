@@ -5,7 +5,8 @@ import {
   deleteOrderById,
   updateOrderById,
 } from "../services/orderService.js";
-
+import dotenv from 'dotenv';
+    dotenv.config()
 import { mongoose } from 'mongoose';
 import qs from "querystring";
 import https from "https";
@@ -24,11 +25,12 @@ const makeAPICall = (postData) => {
   return new Promise((resolve, reject) => {
     const options = {
       method: "POST",
-      hostname: "api.alvochat.com",
+      hostname: "graph.facebook.com",
       port: null,
-      path: "api.alvochat.com/instance1199/messages/chat",
+      path: "/v18.0/me/messages",
       headers: {
-        "content-type": "application/json"
+        "content-type": "application/json",
+        "Authorization":process.env.WHATSAPP_TOKEN
       }
     };
 
@@ -65,12 +67,8 @@ export const addOrder = async (req, res) => {
 
     if (status === "successfull") {
       const apiResponse = await makeAPICall({
-        token: process.env.WHATSAPP_TOKEN,
-        to: 8263964373,
-        body: "WhatsApp API on alvochat.com works good",
-        priority: "",
-        preview_url: "",
-        message_id: ""
+        recipient: { id: "195291223673588" }, // Replace with recipient's WhatsApp ID
+        message: { text: "working api " }, // Replace with the message you want to send
       });
 
       res.status(201).json({ success: true, message: "Successfully added order", apiResponse });
