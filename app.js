@@ -12,8 +12,7 @@ const app=express()
 //     optionsSuccessStatus: 200, // Some legacy browsers choke on 204
 //   };
   
-  // Enable CORS for all routes
-  app.use(cors());
+// Enable CORS for all routes
 app.use(cors())
 let dburl=process.env.DBURL
 let dbname=process.env.DBNAME
