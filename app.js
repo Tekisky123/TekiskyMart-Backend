@@ -7,13 +7,15 @@ import adminRoutes from "./routers/adminRoutes.js"
 
 dotenv.config();
 
-// const corsOptions = {
-//    origin: 'http://65.1.95.27:6000/', // Replace with the origin(s) you want to allow
-//    optionsSuccessStatus: 200, // Some legacy browsers choke on 204
-// };
+ const corsOptions = {
+    origin: '*', // Replace with the origin(s) you want to allow
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+    optionsSuccessStatus: 200, // Some legacy browsers choke on 204
+ };
   
 // Enable CORS for all routes
-const app=express()
+const app=express(corsOptions)
 app.use(cors())
 
 let dburl=process.env.DBURL
