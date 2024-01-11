@@ -10,9 +10,11 @@ const orderSchema = new mongoose.Schema({
     product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true, },
     quantity: { type: Number, required: true, },
   },],
-  totalAmount: { type: Number, required: true, }, status: { type: String, required: true, enum: ['new', 'order', 'dispatch', 'delivered'], default: 'new', },
+
+  totalAmount: { type: Number, required: true, },
+  orderStatus: { type: String, default: "Not Processed", enum: ["Not Processed", "Cash on Delivery", "Processing", "Dispatched", "Cancelled", "Delivered",], },
   timestamps: { order_date: { type: Date, required: true }, delivery_date: { type: Date } },
-  feedback: { type: Number, required: true, trim: true }
+  feedback: { type: Number, trim: true }
 
 }, {
   timestamps: true, // Adds createdAt and updatedAt timestamps
