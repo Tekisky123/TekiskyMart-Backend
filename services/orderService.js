@@ -1,8 +1,17 @@
 import Order from "../models/orderModel.js";
+import ProductModel from "../models/productModel.js";
+import { getOneProduactService } from "./adminServices.js";
 
 let saveOrder = async (data) => {
   try {
     //let { orderId,customerName,mobileNumber, address, products, totalAmount, status,timestamps } = data;
+    for(let i=0;i<data.products.length;i++){
+      let product=await  getOneProduactService(data.products[i].product)
+      console.log(product,"product for order");
+      product.availableStockQty-=parseInt(data.products[i].quantity,10) 
+      console.log(product.availableStockQty);
+      await ProductModel.updateOne({"_id":data.products[i].product},{ $set: { availableStockQty: product.availableStockQty } })
+    }
     let order = new Order({...data,status:"order"});
     let result = await order.save();
     if (result) {

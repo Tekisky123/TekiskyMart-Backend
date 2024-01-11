@@ -67,15 +67,14 @@ export const productDeleteService = async (id) => {
 
 
 
-export const getOneProduactService =async (id) =>{
-   
+export const getOneProduactService = async (id) => {
     try {
-        const OneProduact = await  ProductModel.findOne({_id:id})
-        return OneProduact
+        const OneProduact = await ProductModel.findOne({ _id: id });
+        if (!OneProduact) {
+            throw new Error("Product not found");
+        }
+        return OneProduact;
     } catch (error) {
-         return 'error while getting produact '
+        throw new Error(`Error while getting product: ${error.message}`);
     }
-
-
-
-}
+};

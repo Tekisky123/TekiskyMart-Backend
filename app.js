@@ -14,8 +14,8 @@ dotenv.config();
  };
   
 // Enable CORS for all routes
-const app=express(corsOptions)
-app.use(cors())
+const app=express()
+app.use(cors(corsOptions))
 
 let dburl=process.env.DBURL
 let dbname=process.env.DBNAME
