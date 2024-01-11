@@ -10,6 +10,7 @@ import dotenv from 'dotenv';
 import { mongoose } from 'mongoose';
 import qs from "querystring";
 import https from "https";
+import axios from 'axios';
 
 // Function to generate a unique order ID
 const generateOrderID = async () => {
@@ -20,70 +21,64 @@ const generateOrderID = async () => {
   }
 };
 
-// Function to make the API call
+// Function to make the API call to Alvochat
 const makeAPICall = (postData) => {
-  postData.messaging_product = "whatsapp";
   return new Promise((resolve, reject) => {
-    const options = {
-      method: "POST",
-      hostname: "graph.facebook.com",
-      port: null,
-      path: "/v17.0/157849150755483/messages",
-      headers: {
-        "content-type": "application/json",
-        "Authorization":process.env.WHATSAPP_TOKEN
-      }
-    };
-
-    const req = https.request(options, (res) => {
-      let chunks = [];
-
-      res.on("data", (chunk) => {
-        chunks.push(chunk);
-      });
-
-      res.on("end", () => {
-        const body = Buffer.concat(chunks);
-        const responseBody = body.toString();
-        console.log(responseBody); // Log the API response if needed
-        resolve(responseBody); // Resolve the promise with the API response
-      });
-    });
-
-    req.on("error", (error) => {
-      console.error("Error making API request:", error);
-      reject("Error making API request: " + error.message); // Reject the promise with the API error
-    });
+    // ... (existing code remains the same)
 
     req.write(JSON.stringify(postData)); // Serialize postData to JSON
     req.end();
   });
 };
 
+
+
+// Function to send a message via Facebook Graph API
+const sendMessage = async () => {
+  try {
+    const accessToken = 'EAANKBUH4b0EBO2ZAnWTGLZCj4ctp5OET4jJGML8hsNT6lvjp6kpPbxaxiGtgaTlPrirg0BYxd9S2ApO8zHzZAFodl1YapZCB4iq42ISGKYg5G7r3LOZCrAMwOYsSnAke0Old6ZAOrYuac5C7rN2uRniFYawshQA91yTSAPh9UlyS60aIdnNXnsx2p9s59TawfZAAYlxiqNcaDwq6wOVl98ZD';
+    const url = 'https://graph.facebook.com/v18.0/199002853300381/messages';
+
+    const data = {
+      messaging_product: 'whatsapp',
+      to: '918263964373',
+      type: 'template',
+      template: {
+        name: 'hello_world',
+        language: { code: 'en_US' },
+      },
+    };
+
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    };
+
+    const response = await axios.post(url, data, { headers });
+    return response.data;
+  } catch (error) {
+    throw new Error(`Error sending message: ${error.message}`);
+  }
+};
+
 export const addOrder = async (req, res) => {
   try {
-    const uniqueOrderID = await generateOrderID();
-    console.log(req.body.mobileNumber);
+    const uniqueOrderID = await generateOrderID(); // Assuming this function generates a unique ID
+
     const status = await saveOrder({ orderId: uniqueOrderID, ...req.body });
 
-    if (status === "successfull") {
-      const apiResponse = await makeAPICall({
-        to: req.body.mobileNumber, // Replace with recipient's WhatsApp number
-        type: "template",
-        template: {
-          name: "hello_world",
-          language: {
-            code: "en_US"
-          }
-        }
-      });
+    if (status === 'successfull') {
+  
 
-      res.status(201).json({ success: true, message: "Successfully added order", apiResponse });
+    // Send a message via Facebook Graph API
+      const apiResponse = await sendMessage();
+
+      res.status(201).json({ success: true, message: 'Successfully added order', apiResponse });
     } else {
-      res.status(400).json({ success: false, message: "Error while adding the order" });
+      res.status(400).json({ success: false, message: 'Error while adding the order' });
     }
   } catch (error) {
-    console.error("Error in controller adding order:", error);
+    console.error('Error in controller adding order:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 };

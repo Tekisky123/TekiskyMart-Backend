@@ -35,7 +35,7 @@ aws.config.update({
 
 // createing prodact in DB 
 export const addProduct = async (req, res) => {
-   let url=[];
+ 
     try {
         console.log(req.body)
         console.log(req.files,"file");
@@ -45,7 +45,7 @@ export const addProduct = async (req, res) => {
             console.log('imageProduct ===>', imageProducts);
             
             const uploadedImagesUrl = imageProducts.map(file => file.Location);
-
+             console.log(uploadedImagesUrl)
             const status = await addProductSerivce(req.body,uploadedImagesUrl  );
 
             if (status === 'successfull') {
@@ -56,7 +56,7 @@ export const addProduct = async (req, res) => {
       
     }else{
         throw new Error("please add image");
-        console.log("areeb areeb");
+       
     }
         
     } catch (error) {

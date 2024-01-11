@@ -1,28 +1,13 @@
 
 import ProductModel from "../models/productModel.js";
 
-// export const addProductSerivce = async (data,imageUrl) => {
-
-//     try {
-//         const newProduct = new ProductModel({...data,imageURL:imageUrl},{new:true});
-//         console.log("admin service logs========>",newProduct);
-//         const savedProduct = await newProduct.save();
-//         return 'successfull';
-//     } catch (error) {
-//         console.error("Error adding product:", error);
-//         throw new Error("Failed to add product");
-//     }
-// }
-
 export const addProductSerivce = async (data, imageUrl) => {
     try {
+        
         const newProduct = new ProductModel({ ...data, imageURL: imageUrl });
-        console.log("admin service logs========>", newProduct);
-
         const savedProduct = await newProduct.save();
-        console.log("Saved Product:", savedProduct);
-
         return 'successfull';
+        
     } catch (error) {
         console.error("Error adding product:", error);
         throw new Error("Failed to add product");
