@@ -1,13 +1,23 @@
 import Order from "../models/orderModel.js";
+import { getOneProduactService } from "./adminServices.js";
 
 let saveOrder = async (data) => {
   try {
     //let { orderId,customerName,mobileNumber, address, products, totalAmount, status,timestamps } = data;
-    let order = new Order({...data,status:"order"});
-    let result = await order.save();
-    if (result) {
-      return 'successfull';
+    // let orderById= await getOrderById(data.products.product)
+    // orderById!=null||orderById!=undefined?orderById.
+    for (let i = 0; i < data.products;i++) {
+      let productById = await getOneProduactService(data.products.product)
+      if (productById.availableStockQty <= data.products.quantity) {
+        let order = new Order({ ...data, status: "order" });
+        let result = await order.save();
+        return "success";
+      } else {
+        throw new Error(`Not Suff\\\iceint Products`)
+        return "not enough stock"
+      }
     }
+
   } catch (error) {
     console.error("Error adding order:", error);
     throw new Error("Failed to add order");
@@ -34,7 +44,7 @@ let getOrderById = async (id) => {
   } catch (err) {
     console.error('Error in fetching order:', err);
     throw new Error('Error in fetching order');
-    
+
   }
 };
 
@@ -45,13 +55,13 @@ let deleteOrderById = async (id) => {
     return orderDeleted;
   } catch (err) {
     console.error('Error in deleting the  orders:', err);
-        throw new Error('Error in deleting orders');
+    throw new Error('Error in deleting orders');
   }
 };
 
-let updateOrderById = async (id,updateData) => {
+let updateOrderById = async (id, updateData) => {
   try {
-   // console.log(req.params.id);
+    // console.log(req.params.id);
     let orderUpdated = await Order.findByIdAndUpdate(id, updateData, { new: true });
     return orderUpdated;
   } catch (err) {
@@ -61,4 +71,4 @@ let updateOrderById = async (id,updateData) => {
 };
 
 
-export { saveOrder, getAllOrders, getOrderById, deleteOrderById,updateOrderById};
+export { saveOrder, getAllOrders, getOrderById, deleteOrderById, updateOrderById };

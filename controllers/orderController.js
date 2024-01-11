@@ -121,19 +121,6 @@ export const updateOrder = async (req, res) => {
   }
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 export const deleteOrder = async (req, res) => {
   try {
     const id = req.params.id;

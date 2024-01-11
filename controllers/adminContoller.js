@@ -33,19 +33,19 @@ aws.config.update({
   };
   
 
+
 // createing prodact in DB 
 export const addProduct = async (req, res) => {
  
     try {
-        console.log(req.body)
-        console.log(req.files,"file");
+      
     if(req.files!=undefined){
            
     const imageProducts = await Promise.all(req.files.map(file => uploadFile(file)));
-            console.log('imageProduct ===>', imageProducts);
+           
             
             const uploadedImagesUrl = imageProducts.map(file => file.Location);
-             console.log(uploadedImagesUrl)
+           
             const status = await addProductSerivce(req.body,uploadedImagesUrl  );
 
             if (status === 'successfull') {

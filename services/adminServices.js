@@ -1,10 +1,15 @@
 
 import ProductModel from "../models/productModel.js";
+import { v4 as uuidv4 } from 'uuid';
+
+
+ const productId = uuidv4()
+ 
 
 export const addProductSerivce = async (data, imageUrl) => {
     try {
         
-        const newProduct = new ProductModel({ ...data, imageURL: imageUrl });
+        const newProduct = new ProductModel({ ...data, imageURL: imageUrl ,productId:productId});
         const savedProduct = await newProduct.save();
         return 'successfull';
         
