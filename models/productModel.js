@@ -8,6 +8,7 @@ const productDetailsSchema = new mongoose.Schema({
   packetweight: { type: String, required: true, trim: true },
 });
 
+
 const productSchema = new mongoose.Schema(
   {
     productId: { type: String, required: true, unique: true, trim: true },

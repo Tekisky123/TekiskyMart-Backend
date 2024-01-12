@@ -36,33 +36,26 @@ const uploadFile = async (file) => {
 
 // createing prodact in DB 
 export const addProduct = async (req, res) => {
-
     try {
-
-        if (req.files != undefined) {
-
-            const imageProducts = await Promise.all(req.files.map(file => uploadFile(file)));
-            const uploadedImagesUrl = imageProducts.map(file => file.Location);
-
-            const status = await addProductSerivce(req.body, uploadedImagesUrl);
-
-            if (status === 'successfull') {
-                res.status(201).json({ success: true, message: "Successfully added product" });
-            } else {
-                res.status(400).json({ success: false, message: "error while adding the product" });
-            }
-
+      if (req.files && req.files.length > 0) {
+        const imageProducts = await Promise.all(req.files.map(file => uploadFile(file)));
+        const uploadedImagesUrl = imageProducts.map(file => file.Location);
+  
+        const status = await addProductSerivce(req.body, uploadedImagesUrl);
+  
+        if (status === 'successful') {
+          res.status(201).json({ success: true, message: "Successfully added product" });
         } else {
-            throw new Error("please add image");
-
+          throw new Error("Failed to add product");
         }
-
+      } else {
+        throw new Error("Please add an image");
+      }
     } catch (error) {
-        console.error('Error in controller adding product:', error);
-        res.status(500).send('Error in controller adding product');
+      console.error('Error in controller adding product:', error.message);
+      res.status(500).json({ success: false, message: 'Error in controller adding product' });
     }
-};
-
+  };
 
 //get prodact services 
 export const getProduct = async (req, res) => {
