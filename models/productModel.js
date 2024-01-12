@@ -4,7 +4,7 @@ const productDetailsSchema = new mongoose.Schema({
   availablePackQty: { type: Number },
   availableStockQty: { type: Number, required: true },
   mrp: { type: Number, required: true },
-  offerPrice: { type: String, required: true, trim: true },
+  offerPrice: { type: Number, required: true, trim: true },
   packetweight: { type: String, required: true, trim: true },
 });
 
@@ -15,7 +15,7 @@ const productSchema = new mongoose.Schema(
     productName: { type: String, required: true, trim: true },
     productType: { type: String, required: true, trim: true },
     productBrand: { type: String, required: true, trim: true },
-    productDetails: [productDetailsSchema],
+    productDetails: {type:[productDetailsSchema],required:true},
     description: { type: String, required: true, trim: true },
     createdby: { type: String, required: true, trim: true },
     imageURL: { type: Array, required: true },
