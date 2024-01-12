@@ -15,7 +15,7 @@ const orderSchema = new mongoose.Schema({
 
   totalAmount: { type: Number, required: true, },
   orderStatus: { type: String, default: "Not Processed", enum: ["Not Processed", "Cash on Delivery", "Processing", "Dispatched", "Cancelled", "Delivered",], },
-  delivery_date: { type: Date } },
+  timestamps: { delivery_date: { type: Date } },
   feedback: { type: Number, trim: true }
 
 }, {
