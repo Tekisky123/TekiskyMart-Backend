@@ -14,7 +14,7 @@ let saveOrder = async (data) => {
       console.log(product.productDetails[i].availableStockQty);
       await ProductModel.updateOne({"_id":data.products[i].product},{ $set: { [`productDetails.${i}.availableStockQty`]: product.productDetails[i].availableStockQty } })
     }
-    let order = new Order({...data,status:"order"});
+    let order = new Order({...data,orderStatus:"order"});
     let result = await order.save();
     if (result) {
       return 'successfull';
