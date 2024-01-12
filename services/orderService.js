@@ -1,21 +1,24 @@
 import Order from "../models/orderModel.js";
+
+import ProductModel from "../models/productModel.js";
+
 import { getOneProduactService } from "./adminServices.js";
 
 let saveOrder = async (data) => {
   try {
-    //let { orderId,customerName,mobileNumber, address, products, totalAmount, status,timestamps } = data;
-    // let orderById= await getOrderById(data.products.product)
-    // orderById!=null||orderById!=undefined?orderById.
-    for (let i = 0; i < data.products;i++) {
-      let productById = await getOneProduactService(data.products.product)
-      if (productById.availableStockQty <= data.products.quantity) {
-        let order = new Order({ ...data, status: "order" });
-        let result = await order.save();
-        return "success";
-      } else {
-        throw new Error(`Not Suff\\\iceint Products`)
-        return "not enough stock"
-      }
+    
+    for(let i=0;i<data.products.length;i++){
+      let product=await  getOneProduactService(data.products[i].product)
+      console.log(product,"product for order");
+      product.availableStockQty-=parseInt(data.products[i].quantity,10) 
+      console.log(product.availableStockQty);
+      await ProductModel.updateOne({"_id":data.products[i].product},{ $set: { availableStockQty: product.availableStockQty } })
+    }
+    let order = new Order({...data,status:"order"});
+    let result = await order.save();
+    if (result) {
+      return 'successfull';
+
     }
 
   } catch (error) {

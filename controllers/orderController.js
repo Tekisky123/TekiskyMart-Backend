@@ -34,14 +34,14 @@ const makeAPICall = (postData) => {
 
 
 // Function to send a message via Facebook Graph API
-const sendMessage = async () => {
+const sendMessage = async (mobileNumber) => {
   try {
-    const accessToken = 'EAANKBUH4b0EBO2ZAnWTGLZCj4ctp5OET4jJGML8hsNT6lvjp6kpPbxaxiGtgaTlPrirg0BYxd9S2ApO8zHzZAFodl1YapZCB4iq42ISGKYg5G7r3LOZCrAMwOYsSnAke0Old6ZAOrYuac5C7rN2uRniFYawshQA91yTSAPh9UlyS60aIdnNXnsx2p9s59TawfZAAYlxiqNcaDwq6wOVl98ZD';
-    const url = 'https://graph.facebook.com/v18.0/199002853300381/messages';
+    const accessToken = 'EAAYubUNY8J4BOwcRXLLvpWsihNbuK58hvOSfUrLFBCSbStKJtChUi78OqO1TneW2rfWTQqw5C5qZAfoUyGFHeDyqSSxKN24Uqop5JeU1ngdtg1tUaHZChjb1ZAlCkfRulscgVm1OZAg2i26WAmPFJHzB2ZBi0CG00gS7RDZC1jqqmHZB45kdhuGJQorspeu3T8R';
+    const url = 'https://graph.facebook.com/v17.0/157849150755483/messages';
 
     const data = {
       messaging_product: 'whatsapp',
-      to: '918263964373',
+      to: mobileNumber,
       type: 'template',
       template: {
         name: 'hello_world',
@@ -62,6 +62,7 @@ const sendMessage = async () => {
 };
 
 export const addOrder = async (req, res) => {
+  console.log(req.body.mobileNumber,"Mobile Number For Testing");
   try {
     const uniqueOrderID = await generateOrderID(); // Assuming this function generates a unique ID
 
@@ -71,7 +72,7 @@ export const addOrder = async (req, res) => {
   
 
     // Send a message via Facebook Graph API
-      const apiResponse = await sendMessage();
+      const apiResponse = await sendMessage(req.body.mobileNumber);
 
       res.status(201).json({ success: true, message: 'Successfully added order', apiResponse });
     } else {
