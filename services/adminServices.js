@@ -10,6 +10,7 @@ export const addProductSerivce = async (data, imageUrl) => {
     try {
         
         const newProduct = new ProductModel({ ...data, imageURL: imageUrl ,productId:productId});
+        console.log(newProduct)
         const savedProduct = await newProduct.save();
         return 'successfull';
         
@@ -18,6 +19,7 @@ export const addProductSerivce = async (data, imageUrl) => {
         throw new Error("Failed to add product");
     }
 };
+
 
 
 // Assuming this file is productServices.js

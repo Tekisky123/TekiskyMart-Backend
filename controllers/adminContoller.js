@@ -11,54 +11,52 @@ aws.config.update({
     accessKeyId: process.env.AWS_ACCESS_KEY,
     secretAccessKey: process.env.AWS_SEC_KEY,
     region: process.env.AWS_REGION,
-  });
-  
-  
-  const s3 = new aws.S3();
-  
-  const uploadFile = async (file) => {
-      // console.log('File Buffer:', file.buffer); // Log the file buffer
-      const params = {
-          Bucket: process.env.AWS_BUCKET_NAME ,
-          Key: `images/${Date.now()}_${file.originalname}`,
-          Body: file.buffer,
-      };
-      // console.log('Upload Params:', params);
-      try {
-          const data = await s3.upload(params).promise();
-          return data;
-      } catch (error) {
-          throw new Error(`Error uploading file: ${error.message}`);
-      }
-  };
-  
+});
+
+
+const s3 = new aws.S3();
+
+const uploadFile = async (file) => {
+    // console.log('File Buffer:', file.buffer); // Log the file buffer
+    const params = {
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: `images/${Date.now()}_${file.originalname}`,
+        Body: file.buffer,
+    };
+    // console.log('Upload Params:', params);
+    try {
+        const data = await s3.upload(params).promise();
+        return data;
+    } catch (error) {
+        throw new Error(`Error uploading file: ${error.message}`);
+    }
+};
+
 
 
 // createing prodact in DB 
 export const addProduct = async (req, res) => {
- 
+
     try {
-      
-    if(req.files!=undefined){
-           
-    const imageProducts = await Promise.all(req.files.map(file => uploadFile(file)));
-           
-            
+
+        if (req.files != undefined) {
+
+            const imageProducts = await Promise.all(req.files.map(file => uploadFile(file)));
             const uploadedImagesUrl = imageProducts.map(file => file.Location);
-           
-            const status = await addProductSerivce(req.body,uploadedImagesUrl  );
+
+            const status = await addProductSerivce(req.body, uploadedImagesUrl);
 
             if (status === 'successfull') {
-                res.status(201).json({success : true , message : "Successfully added product"});
+                res.status(201).json({ success: true, message: "Successfully added product" });
             } else {
-                res.status(400).json({success : false , message : "error while adding the product"});
-                }
-      
-    }else{
-        throw new Error("please add image");
-       
-    }
-        
+                res.status(400).json({ success: false, message: "error while adding the product" });
+            }
+
+        } else {
+            throw new Error("please add image");
+
+        }
+
     } catch (error) {
         console.error('Error in controller adding product:', error);
         res.status(500).send('Error in controller adding product');
@@ -70,7 +68,7 @@ export const addProduct = async (req, res) => {
 export const getProduct = async (req, res) => {
     try {
         const products = await getProductService();
-        res.status(200).json({success : true, products:products }); // Sending status and products as an object
+        res.status(200).json({ success: true, products: products }); // Sending status and products as an object
     } catch (error) {
         console.error('Error in getting products:', error);
         res.status(500).json({ status: 'error', message: 'Error in getting products' });
@@ -107,16 +105,16 @@ export const deleteProduct = async (req, res) => {
 }
 
 
-export const getOneProduact =async (req,res) =>{
+export const getOneProduact = async (req, res) => {
     const id = req.params.id
-  try {
-     const getOneProduact = await getOneProduactService(id);
-     res.status(200).json({success : true, getOneProduact:getOneProduact });
-     
-  } catch (error) {
-    console.log('error while getoneProduact catch block')
-    res.status(400).json({ success: false, message: error.message })
+    try {
+        const getOneProduact = await getOneProduactService(id);
+        res.status(200).json({ success: true, getOneProduact: getOneProduact });
 
-  }
+    } catch (error) {
+        console.log('error while getoneProduact catch block')
+        res.status(400).json({ success: false, message: error.message })
+
+    }
 }
 
