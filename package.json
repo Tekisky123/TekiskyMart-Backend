@@ -4,8 +4,9 @@
   "type": "module",
   "description": "",
   "main": "app.js",
+  
   "scripts": {
-    "start": "node app.js",
+    "start": "babel-node app.js",
     "dev": "nodemon app.js"
   },
   "keywords": [],
