@@ -1,6 +1,6 @@
 
 import ProductModel from "../models/productModel.js";
-import { v4 as uuidv4 } from 'uuid';
+
 import mongoose from 'mongoose';
 
 const generateProductId = async () => {
