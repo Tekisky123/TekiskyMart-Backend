@@ -11,6 +11,7 @@ import { mongoose } from 'mongoose';
 import qs from "querystring";
 import https from "https";
 import axios from 'axios';
+import { getOneProduactService } from "../services/adminServices.js";
 
 // Function to generate a unique order ID
 const generateOrderID = async () => {
@@ -84,18 +85,46 @@ export const addOrder = async (req, res) => {
   }
 };
 
-//get prodact services
 export const getAllOrder = async (req, res) => {
   try {
     const orders = await getAllOrders();
-    res.status(200).json({ success: true, orders: orders }); // Sending status and orders as an object
+
+    // Create an array to store detailed product information for each order
+    const ordersWithDetails = [];
+
+    for (const order of orders) {
+      // Create an array to store product details for the current order
+      const productsDetails = [];
+
+      for (const orderDetails of order.products) {
+        const productId = orderDetails.product;
+        const productInfo = await getOneProduactService(productId);
+
+        // Extract product details for each item in the productDetails array
+        const productDetailsArray = productInfo.productDetails.map((details) => ({
+          imageURL: productInfo.imageURL,
+          packetweight: details.packetweight,
+          description: productInfo.description,
+          mrp: details.mrp,
+          quantity: orderDetails.quantity,
+        }));
+
+        // Add product details to the array
+        productsDetails.push(...productDetailsArray);
+      }
+
+      // Add the productsDetails array to the order object
+      const orderWithDetails = { ...order.toObject(), productsDetails };
+      ordersWithDetails.push(orderWithDetails);
+    }
+
+    res.status(200).json({ success: true, orders: ordersWithDetails });
   } catch (error) {
     console.error("Error in getting orders:", error);
-    res
-      .status(500)
-      .json({ status: "error", message: "Error in getting orders" });
+    res.status(500).json({ status: "error", message: "Error in getting orders" });
   }
 };
+
 export const updateOrder = async (req, res) => {
   try {
     const id = req.params.id;
@@ -138,9 +167,28 @@ export const getOrderById1 = async (req, res) => {
   try {
     const id = req.params.id;
     const updateOrder = await getOrderById(id);
-    res
-      .status(200)
-      .json({ success: true, order: updateOrder });
+
+    // Create an array to store product details
+    const productsDetails = [];
+
+    for (const orderDetails of updateOrder.products) {
+      const productId = orderDetails.product;
+      const productInfo = await getOneProduactService(productId);
+
+      // Extract product details for each item in the productDetails array
+      const productDetailsArray = productInfo.productDetails.map((details) => ({
+        imageURL: productInfo.imageURL,
+        packetweight: details.packetweight,
+        description: productInfo.description,
+        mrp: details.mrp,
+        quantity: orderDetails.quantity,
+      }));
+
+      // Add product details to the array
+      productsDetails.push(...productDetailsArray);
+    }
+
+    res.status(200).json({ success: true, order: updateOrder,"desc":productsDetails });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
