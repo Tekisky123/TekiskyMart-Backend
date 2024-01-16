@@ -10,13 +10,13 @@ const orderSchema = new mongoose.Schema({
   landmark:{type: String, required: true},
   products: [{
     product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true, },
+    productDetails: { type: mongoose.Schema.Types.ObjectId, ref: 'ProductDetails', required: true, },
     quantity: { type: Number, required: true, },
     packetweight: { type: String, required: true, trim: true },
   },],
 
   totalAmount: { type: Number, required: true, },
   orderStatus: { type: String, default: "Not Processed", enum: ["Not Processed", "Cash on Delivery", "Processing", "Dispatched", "Cancelled", "Delivered",], },
-  timestamps: { delivery_date: { type: Date } },
   feedback: { type: Number, trim: true }
 
 }, {

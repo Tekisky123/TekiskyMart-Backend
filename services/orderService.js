@@ -8,28 +8,34 @@ let saveOrder = async (data) => {
   try {
     
     for(let i=0;i<data.products.length;i++){
-      let product=await  getOneProduactService(data.products[i].product)
+      let product=await getOneProduactService(data.products[i].product)
       console.log(product,"product for order");
       // Find the index of the selected product weight in the productDetails array
-      const weightIndex = product.productDetails.findIndex(
-        (details) => details.packetweight === data.products[i].packetweight
+      // const weightIndex = product.productDetails.findIndex(
+      //   (details) => details.packetweight === data.products[i].packetweight
+      // );
+      const productDetails =  await product.productDetails.find(
+        (details) => details._id.toString() === data.products[i].productDetails
       );
 
-      // Update the availableStockQty based on the correct index
-      product.productDetails[weightIndex].availableStockQty -= parseInt(
-        data.products[i].quantity,
-        10
-      );
+      if (!productDetails) {
+        console.error('Product details not found for the given ID');
+        continue; // Skip to the next iteration if productDetails is not found
+      }
+      
+      productDetails.availableStockQty -= parseInt(data.products[i].quantity, 10);
+      console.log(productDetails.availableStockQty);
 
-      console.log(product.productDetails[weightIndex].availableStockQty);
+
+      // console.log(product.productDetails[weightIndex].availableStockQty);
 
       // Update the product in the database
       await ProductModel.updateOne(
-        { "_id": product._id, "productDetails._id": product.productDetails[weightIndex]._id },
+        { "_id": product._id, "productDetails._id": productDetails._id },
         {
           $set: {
             "productDetails.$.availableStockQty":
-              product.productDetails[weightIndex].availableStockQty,
+              productDetails.availableStockQty,
           },
         }
       );
