@@ -59,19 +59,15 @@ const sendMessage = async (mobileNumber) => {
   } catch (error) {
     throw new Error(`Error sending message: ${error.message}`);
   }
-};
-
-export const addOrder = async (req, res) => {
-  console.log(req.body.mobileNumber,"Mobile Number For Testing");
+};export const addOrder = async (req, res) => {
+  console.log(req.body.mobileNumber, "Mobile Number For Testing");
   try {
     const uniqueOrderID = await generateOrderID(); // Assuming this function generates a unique ID
 
     const status = await saveOrder({ orderId: uniqueOrderID, ...req.body });
 
-    if (status === 'successfull') {
-  
-
-    // Send a message via Facebook Graph API
+    if (status === 'successful') {
+      // Assuming you want to send a message via Facebook Graph API only if the order is added successfully
       const apiResponse = await sendMessage(req.body.mobileNumber);
 
       res.status(201).json({ success: true, message: 'Successfully added order', apiResponse });

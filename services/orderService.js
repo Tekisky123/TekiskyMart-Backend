@@ -1,12 +1,13 @@
 import Order from "../models/orderModel.js";
-
 import ProductModel from "../models/productModel.js";
 
 import { getOneProduactService } from "./adminServices.js";
+
 const saveOrder = async (data) => {
+  
   try {
     for (let i = 0; i < data.products.length; i++) {
-      // Assuming getOneProduactService returns a product document
+      // Assuming getOneProductService returns a product document
       let product = await getOneProduactService(data.products[i].product);
       console.log(product, "product for order");
 
@@ -25,7 +26,7 @@ const saveOrder = async (data) => {
       );
 
       // Check if the weightIndex is valid
-      if (weightIndex  ==-1 ){
+      if (weightIndex === -1) {
         console.error("Invalid weight index for product:", product);
         console.error("Order Packet Weight:", data.products[i].packetweight);
         throw new Error("Invalid weight index for product");
