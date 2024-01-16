@@ -3,17 +3,33 @@ import Order from "../models/orderModel.js";
 import ProductModel from "../models/productModel.js";
 
 import { getOneProduactService } from "./adminServices.js";
-
-let saveOrder = async (data) => {
+const saveOrder = async (data) => {
   try {
-    
-    for(let i=0;i<data.products.length;i++){
-      let product=await  getOneProduactService(data.products[i].product)
-      console.log(product,"product for order");
+    for (let i = 0; i < data.products.length; i++) {
+      // Assuming getOneProduactService returns a product document
+      let product = await getOneProduactService(data.products[i].product);
+      console.log(product, "product for order");
+
+      // Check if product details array is empty
+      if (!product.productDetails || product.productDetails.length === 0) {
+        console.error("No product details found for the product:", product);
+        throw new Error("No product details found for the product");
+      }
+
+      // Log product details for debugging
+      console.log("Product Details:", product.productDetails);
+
       // Find the index of the selected product weight in the productDetails array
       const weightIndex = product.productDetails.findIndex(
         (details) => details.packetweight === data.products[i].packetweight
       );
+
+      // Check if the weightIndex is valid
+      if (weightIndex  ==-1 ){
+        console.error("Invalid weight index for product:", product);
+        console.error("Order Packet Weight:", data.products[i].packetweight);
+        throw new Error("Invalid weight index for product");
+      }
 
       // Update the availableStockQty based on the correct index
       product.productDetails[weightIndex].availableStockQty -= parseInt(
@@ -21,11 +37,17 @@ let saveOrder = async (data) => {
         10
       );
 
-      console.log(product.productDetails[weightIndex].availableStockQty);
+      console.log(
+        "Updated availableStockQty:",
+        product.productDetails[weightIndex].availableStockQty
+      );
 
       // Update the product in the database
       await ProductModel.updateOne(
-        { "_id": product._id, "productDetails._id": product.productDetails[weightIndex]._id },
+        {
+          "_id": product._id,
+          "productDetails._id": product.productDetails[weightIndex]._id
+        },
         {
           $set: {
             "productDetails.$.availableStockQty":
@@ -34,19 +56,19 @@ let saveOrder = async (data) => {
         }
       );
     }
-    let order = new Order({...data});
-    let result = await order.save();
+
+    // Create and save the order
+    const order = new Order({ ...data });
+    const result = await order.save();
+
     if (result) {
-      return 'successfull';
-
+      console.log('Order added successfully');
+      return 'successful';
     }
-
-  }
-   catch (error) {
+  } catch (error) {
     console.error("Error adding order:", error);
     throw new Error("Failed to add order");
   }
-  console.log(req);
 };
 
 let getAllOrders = async () => {

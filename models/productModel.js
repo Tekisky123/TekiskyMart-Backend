@@ -5,7 +5,8 @@ const productDetailsSchema = new mongoose.Schema({
   availableStockQty: { type: Number, required: true },
   mrp: { type: Number, required: true },
   offerPrice: { type: Number, required: true, trim: true },
-  packetweight: { type: String, required: true, trim: true },
+  packetweight: { type: Number, required: true, trim: true },
+  unitOfmeasure: { type: String, required: true, trim: true },
 });
 
 
