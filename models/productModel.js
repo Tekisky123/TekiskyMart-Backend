@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 
 const productDetailsSchema = new mongoose.Schema({
-  availablePackQty: { type: Number },
   availableStockQty: { type: Number, required: true },
   mrp: { type: Number, required: true },
   offerPrice: { type: Number, required: true, trim: true },

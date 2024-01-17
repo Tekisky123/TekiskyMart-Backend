@@ -4,7 +4,6 @@
   "type": "module",
   "description": "",
   "main": "app.js",
-  
   "scripts": {
     "start": "babel-node app.js",
     "dev": "nodemon app.js"
@@ -14,7 +13,6 @@
   "license": "ISC",
   "dependencies": {
     "aws-sdk": "^2.1531.0",
-    "axios": "^1.6.5",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",

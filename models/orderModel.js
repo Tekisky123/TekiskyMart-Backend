@@ -12,7 +12,6 @@ const orderSchema = new mongoose.Schema({
     product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true, },
     productDetails: { type: mongoose.Schema.Types.ObjectId, ref: 'ProductDetails', required: true, },
     quantity: { type: Number, required: true, },
-    packetweight: { type: String, required: true, trim: true },
   },],
 
   totalAmount: { type: Number, required: true, },
