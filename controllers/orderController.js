@@ -58,6 +58,7 @@ export const getAllOrder = async (req, res) => {
 
         // Extract product details for each item in the productDetails array
         const productDetailsArray = productInfo.productDetails.map((details) => ({
+          productName:productInfo.productName,
           imageURL: productInfo.imageURL,
           packetweight: details.packetweight,
           description: productInfo.description,
@@ -73,6 +74,7 @@ export const getAllOrder = async (req, res) => {
       const orderWithDetails = { ...order.toObject(), productsDetails };
       ordersWithDetails.push(orderWithDetails);
     }
+    console.log(ordersWithDetails.map((data)=>console.log(data)))
 
     res.status(200).json({ success: true, orders: ordersWithDetails });
   } catch (error) {
@@ -133,6 +135,7 @@ export const getOrderById1 = async (req, res) => {
 
       // Extract product details for each item in the productDetails array
       const productDetailsArray = productInfo.productDetails.map((details) => ({
+        product:productInfo.productName ,
         imageURL: productInfo.imageURL,
         packetweight: details.packetweight,
         description: productInfo.description,
@@ -143,6 +146,7 @@ export const getOrderById1 = async (req, res) => {
       // Add product details to the array
       productsDetails.push(...productDetailsArray);
     }
+ 
 
     res.status(200).json({ success: true, order: updateOrder, "desc": productsDetails });
   } catch (error) {

@@ -58,7 +58,6 @@ let saveOrder = async (data) => {
 let getAllOrders = async () => {
   try {
     let allOrders = await Order.find();
-    console.log(allOrders);
     return allOrders;
   } catch (err) {
     console.error('Error in fetching orders:', err);
