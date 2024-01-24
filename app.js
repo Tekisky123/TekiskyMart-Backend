@@ -4,7 +4,7 @@ import cors from "cors"
 import { dbConnect } from "./db/dbConnect.js"
 import orderRoute from "./routers/orderRouter.js";
 import adminRoutes from "./routers/adminRoutes.js"
-
+import morgan from "morgan";
 dotenv.config();
  const corsOptions = {
     origin: '*', // Replace with the origin(s) you want to allow
@@ -16,6 +16,7 @@ dotenv.config();
 // Enable CORS for all routes
 const app=express()
 app.use(cors(corsOptions))
+app.use(morgan('tiny'))
 
 let dburl=process.env.DBURL
 let dbname=process.env.DBNAME

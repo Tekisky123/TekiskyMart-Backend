@@ -19,7 +19,7 @@ export const addProductSerivce = async (data, imageUrl) => {
         
         const savedProduct = await newProduct.save();
           console.log(savedProduct)
-        return 'successful';
+        return 'successfull';
     } catch (error) {
         if (error.name === 'ValidationError') {
             console.error("Validation error:", error.message);
@@ -84,15 +84,19 @@ export const productDeleteService = async (id) => {
 
 
 
-
-export const getOneProduactService = async (id) => {
+export const getOneProduactService = async (productId) => {
     try {
-        const OneProduact = await ProductModel.findOne({ _id: id });
-        if (!OneProduact) {
-            throw new Error("Product not found");
-        }
-        return OneProduact;
+      const product = await ProductModel.findOne({ _id:productId }).exec();
+  
+      if (!product) {
+        console.error(`Product not found for the given ID: ${productId}`);
+        return null; // Return null or an empty object
+      }
+  
+      return product;
     } catch (error) {
-        throw new Error(`Error while getting product: ${error.message}`);
+      console.error('Error while getting product:', error);
+      throw error; // Re-throw the error to propagate it
     }
-};
+  };
+  

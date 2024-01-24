@@ -43,7 +43,7 @@ export const addProduct = async (req, res) => {
   
         const status = await addProductSerivce(req.body, uploadedImagesUrl);
   
-        if (status === 'successful') {
+        if (status === 'successfull') {
           res.status(201).json({ success: true, message: "Successfully added product" });
         } else {
           throw new Error("Failed to add product");

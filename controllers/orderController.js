@@ -45,36 +45,40 @@ export const getAllOrder = async (req, res) => {
   try {
     const orders = await getAllOrders();
 
-    // Create an array to store detailed product information for each order
-    const ordersWithDetails = [];
-
-    for (const order of orders) {
+    // Create an array to store enhanced order information
+    const ordersWithDetails = await Promise.all(orders.map(async (order) => {
       // Create an array to store product details for the current order
-      const productsDetails = [];
-
-      for (const orderDetails of order.products) {
+      const productsDetails = await Promise.all(order.products.map(async (orderDetails) => {
         const productId = orderDetails.product;
+        console.log(`Processing product with ID: ${productId}`);
+
         const productInfo = await getOneProduactService(productId);
 
-        // Extract product details for each item in the productDetails array
-        const productDetailsArray = productInfo.productDetails.map((details) => ({
-          productName:productInfo.productName,
-          imageURL: productInfo.imageURL,
-          packetweight: details.packetweight,
-          description: productInfo.description,
-          mrp: details.mrp,
-          quantity: orderDetails.quantity,
-        }));
+        if (!productInfo) {
+          console.error(`Product details not found for the given ID: ${productId}`);
+          return null; // Return null or handle appropriately
+        }
 
-        // Add product details to the array
-        productsDetails.push(...productDetailsArray);
-      }
+        // Assuming availableStockQty is at the top level of the product schema
+        const productDetails = {
+          productName: productInfo.productName,
+          imageURL: productInfo.imageURL,
+          packetweight: productInfo.packetweight,
+          description: productInfo.description,
+          mrp: productInfo.mrp,
+          quantity: orderDetails.quantity,
+        };
+
+        return productDetails;
+      }));
+
+      // Flatten the productsDetails array
+      const flattenedDetails = [].concat(...productsDetails);
 
       // Add the productsDetails array to the order object
-      const orderWithDetails = { ...order.toObject(), productsDetails };
-      ordersWithDetails.push(orderWithDetails);
-    }
-    
+      return { ...order.toObject(), productsDetails: flattenedDetails };
+    }));
+
     res.status(200).json({ success: true, orders: ordersWithDetails });
   } catch (error) {
     console.error("Error in getting orders:", error);
@@ -125,29 +129,39 @@ export const getOrderById1 = async (req, res) => {
     const id = req.params.id;
     const updateOrder = await getOrderById(id);
 
+    if (!updateOrder) {
+      return res.status(404).json({ success: false, message: 'Order not found' });
+    }
+
     // Create an array to store product details
     const productsDetails = [];
 
     for (const orderDetails of updateOrder.products) {
       const productId = orderDetails.product;
+      console.log(`Processing product with ID: ${productId}`);
+
       const productInfo = await getOneProduactService(productId);
 
-      // Extract product details for each item in the productDetails array
-      const productDetailsArray = productInfo.productDetails.map((details) => ({
-        product:productInfo.productName ,
+      if (!productInfo) {
+        console.error(`Product details not found for the given ID: ${productId}`);
+        continue; // Skip to the next iteration if product details are not found
+      }
+
+      // Assuming availableStockQty is at the top level of the product schema
+      const productDetails = {
+        product: productInfo.productName,
         imageURL: productInfo.imageURL,
-        packetweight: details.packetweight,
+        packetweight: productInfo.packetweight,
         description: productInfo.description,
-        mrp: details.mrp,
+        mrp: productInfo.mrp,
         quantity: orderDetails.quantity,
-      }));
+      };
 
       // Add product details to the array
-      productsDetails.push(...productDetailsArray);
+      productsDetails.push(productDetails);
     }
- 
 
-    res.status(200).json({ success: true, order: updateOrder, "desc": productsDetails });
+    res.status(200).json({ success: true, order: updateOrder, productsDetails });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

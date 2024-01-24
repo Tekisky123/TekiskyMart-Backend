@@ -4,60 +4,54 @@ import ProductModel from "../models/productModel.js";
 
 import { getOneProduactService } from "./adminServices.js";
 
-let saveOrder = async (data) => {
+const saveOrder = async (data) => {
   try {
-    
-    for(let i=0;i<data.products.length;i++){
-      let product=await getOneProduactService(data.products[i].product)
-      console.log(product,"product for order");
-      // Find the index of the selected product weight in the productDetails array
-      // const weightIndex = product.productDetails.findIndex(
-      //   (details) => details.packetweight === data.products[i].packetweight
-      // );
-      const productDetails =  await product.productDetails.find(
-        (details) => details._id.toString() === data.products[i].productDetails
-      );
-
-      if (!productDetails) {
-        console.error('Product details not found for the given ID');
-        continue; // Skip to the next iteration if productDetails is not found
-      }
+    for (let i = 0; i < data.products.length; i++) {
+      const productId = data.products[i].product;
       
-      productDetails.availableStockQty -= parseInt(data.products[i].quantity, 10);
-      console.log(productDetails.availableStockQty);
 
+      // Log the productId for debugging purposes
+      console.log(`Processing product with ID: ${productId}`);
 
-      // console.log(product.productDetails[weightIndex].availableStockQty);
+      const product = await getOneProduactService(productId);
+
+      if (!product) {
+        console.error(`Product not found for the given ID: ${productId}`);
+        continue; // Skip to the next iteration if the product is not found
+      }
+
+      // Assuming availableStockQty is at the top level of the product schema
+      product.availableStockQty -= parseInt(data.products[i].quantity, 10);
 
       // Update the product in the database
       await ProductModel.updateOne(
-        { "_id": product._id, "productDetails._id": productDetails._id },
+        { "_id": product._id },
         {
           $set: {
-            "productDetails.$.availableStockQty":
-              productDetails.availableStockQty,
+            "availableStockQty": product.availableStockQty,
           },
         }
       );
     }
-    let order = new Order({...data});
-    let result = await order.save();
+
+    const order = new Order({ ...data });
+    const result = await order.save();
+
     if (result) {
+      console.log('Order added successfully:', result);
       return 'successfull';
-
     }
-
-  }
-   catch (error) {
+  } catch (error) {
     console.error("Error adding order:", error);
     throw new Error("Failed to add order");
   }
-  console.log(req);
 };
+
 
 let getAllOrders = async () => {
   try {
     let allOrders = await Order.find();
+
     return allOrders;
   } catch (err) {
     console.error('Error in fetching orders:', err);
