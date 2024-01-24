@@ -74,8 +74,7 @@ export const getAllOrder = async (req, res) => {
       const orderWithDetails = { ...order.toObject(), productsDetails };
       ordersWithDetails.push(orderWithDetails);
     }
-    console.log(ordersWithDetails.map((data)=>console.log(data)))
-
+    
     res.status(200).json({ success: true, orders: ordersWithDetails });
   } catch (error) {
     console.error("Error in getting orders:", error);
