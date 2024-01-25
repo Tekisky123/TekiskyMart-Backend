@@ -6,6 +6,7 @@ import {
   updateOrderById,
 } from "../services/orderService.js";
 import dotenv from 'dotenv';
+import axios from "axios"
 dotenv.config()
 import { mongoose } from 'mongoose';
 
@@ -21,6 +22,33 @@ const generateOrderID = async () => {
 };
 
 
+const sendMessage = async (mobileNumber) => {
+  try {
+    const accessToken = 'EAAYubUNY8J4BO7FaDNi44F0RbjRKCRDE49UNsyNwdBS8ZAvt95ZBOdm2R2WbHCOuGkPoTlV8ZC3MeR6VqwglGntgQ1vPF4WUx3MtUnJdyspBKzeWcQBvX9ak9ZBEWGCFeR6lXbCIVcK4xVck7ScFiEFUl8Niu7oDzjrz4soIVqpVSpoYzywUaNK0UsM3IrezqBXjOdv0g5PvZAg5U';
+    const url = 'https://graph.facebook.com/v18.0/160700440470778/messages';
+
+    const data = {
+      messaging_product: 'whatsapp',
+      to: mobileNumber,
+      type: 'template',
+      template: {
+        name: 'hello_world',
+        language: { code: 'en_US' },
+      },
+    };
+
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    };
+
+    const response = await axios.post(url, data, { headers });
+    return response.data;
+  } catch (error) {
+    throw new Error(`Error sending message: ${error.message}`);
+  }
+};
+
 
 
 export const addOrder = async (req, res) => {
@@ -31,7 +59,8 @@ export const addOrder = async (req, res) => {
     const status = await saveOrder({ orderId: uniqueOrderID, ...req.body });
 
     if (status === 'successfull') {
-      res.status(201).json({ success: true, message: 'Successfully added order', });
+      const apiCall=await sendMessage(req.body.mobileNumber)
+      res.status(201).json({ success: true, message: 'Successfully added order', response:apiCall});
     } else {
       res.status(400).json({ success: false, message: 'Error while adding the order' });
     }
