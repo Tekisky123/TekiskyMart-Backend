@@ -25,6 +25,7 @@ const generateOrderID = async () => {
 const sendMessage = async (mobileNumber) => {
   try {
     const accessToken = process.env.WHATSAPP_TOKEN;
+    console.log(accessToken);
     const url = 'https://graph.facebook.com/v18.0/160700440470778/messages';
 
     const data = {
