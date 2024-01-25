@@ -24,7 +24,7 @@ const generateOrderID = async () => {
 
 const sendMessage = async (mobileNumber) => {
   try {
-    const accessToken = 'EAAYubUNY8J4BO7FaDNi44F0RbjRKCRDE49UNsyNwdBS8ZAvt95ZBOdm2R2WbHCOuGkPoTlV8ZC3MeR6VqwglGntgQ1vPF4WUx3MtUnJdyspBKzeWcQBvX9ak9ZBEWGCFeR6lXbCIVcK4xVck7ScFiEFUl8Niu7oDzjrz4soIVqpVSpoYzywUaNK0UsM3IrezqBXjOdv0g5PvZAg5U';
+    const accessToken = process.env.WHATSAPP_TOKEN;
     const url = 'https://graph.facebook.com/v18.0/160700440470778/messages';
 
     const data = {
