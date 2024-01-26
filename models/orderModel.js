@@ -10,10 +10,6 @@ const orderSchema = new mongoose.Schema({
   landmark: { type: String, required: true },
   products: [{
     product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true, },
-<<<<<<< HEAD
-    productDetails: { type: mongoose.Schema.Types.ObjectId, ref: "Product.productDetails", required: true, },
-=======
->>>>>>> 10da19b6c6f8924532087acc45b58db53cdbdb62
     quantity: { type: Number, required: true, },
   },],
   totalAmount: { type: Number, required: true, },
