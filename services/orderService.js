@@ -4,6 +4,7 @@ import ProductModel from "../models/productModel.js";
 import { getOneProduactService } from "./adminServices.js";
 
 const saveOrder = async (data) => {
+<<<<<<< HEAD
   
   try {
     
@@ -26,22 +27,52 @@ const saveOrder = async (data) => {
       // Update the product in the database
       await ProductModel.updateOne(
         { "_id": product._id, "productDetails._id": product.productDetails[weightIndex]._id },
+=======
+  try {
+    for (let i = 0; i < data.products.length; i++) {
+      const productId = data.products[i].product;
+      
+
+      // Log the productId for debugging purposes
+      console.log(`Processing product with ID: ${productId}`);
+
+      const product = await getOneProduactService(productId);
+
+      if (!product) {
+        console.error(`Product not found for the given ID: ${productId}`);
+        continue; // Skip to the next iteration if the product is not found
+      }
+
+      // Assuming availableStockQty is at the top level of the product schema
+      product.availableStockQty -= parseInt(data.products[i].quantity, 10);
+
+      // Update the product in the database
+      await ProductModel.updateOne(
+        { "_id": product._id },
+>>>>>>> 10da19b6c6f8924532087acc45b58db53cdbdb62
         {
           $set: {
-            "productDetails.$.availableStockQty":
-              productDetails.availableStockQty,
+            "availableStockQty": product.availableStockQty,
           },
         }
       );
     }
 
+<<<<<<< HEAD
     // Create and save the order
+=======
+>>>>>>> 10da19b6c6f8924532087acc45b58db53cdbdb62
     const order = new Order({ ...data });
     const result = await order.save();
 
     if (result) {
+<<<<<<< HEAD
       console.log('Order added successfully');
       return 'successful';
+=======
+      console.log('Order added successfully:', result);
+      return 'successfull';
+>>>>>>> 10da19b6c6f8924532087acc45b58db53cdbdb62
     }
   } catch (error) {
     console.error("Error adding order:", error);
@@ -49,10 +80,11 @@ const saveOrder = async (data) => {
   }
 };
 
+
 let getAllOrders = async () => {
   try {
     let allOrders = await Order.find();
-    console.log(allOrders);
+
     return allOrders;
   } catch (err) {
     console.error('Error in fetching orders:', err);

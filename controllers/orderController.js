@@ -6,11 +6,11 @@ import {
   updateOrderById,
 } from "../services/orderService.js";
 import dotenv from 'dotenv';
-    dotenv.config()
+import axios from "axios"
+dotenv.config()
 import { mongoose } from 'mongoose';
-import qs from "querystring";
-import https from "https";
-import axios from 'axios';
+
+import { getOneProduactService } from "../services/adminServices.js";
 
 // Function to generate a unique order ID
 const generateOrderID = async () => {
@@ -21,23 +21,12 @@ const generateOrderID = async () => {
   }
 };
 
-// Function to make the API call to Alvochat
-const makeAPICall = (postData) => {
-  return new Promise((resolve, reject) => {
-    // ... (existing code remains the same)
 
-    req.write(JSON.stringify(postData)); // Serialize postData to JSON
-    req.end();
-  });
-};
-
-
-
-// Function to send a message via Facebook Graph API
 const sendMessage = async (mobileNumber) => {
   try {
-    const accessToken = 'EAAYubUNY8J4BOwcRXLLvpWsihNbuK58hvOSfUrLFBCSbStKJtChUi78OqO1TneW2rfWTQqw5C5qZAfoUyGFHeDyqSSxKN24Uqop5JeU1ngdtg1tUaHZChjb1ZAlCkfRulscgVm1OZAg2i26WAmPFJHzB2ZBi0CG00gS7RDZC1jqqmHZB45kdhuGJQorspeu3T8R';
-    const url = 'https://graph.facebook.com/v17.0/157849150755483/messages';
+    const accessToken = process.env.WHATSAPP_TOKEN;
+    console.log(accessToken);
+    const url = 'https://graph.facebook.com/v18.0/160700440470778/messages';
 
     const data = {
       messaging_product: 'whatsapp',
@@ -59,15 +48,19 @@ const sendMessage = async (mobileNumber) => {
   } catch (error) {
     throw new Error(`Error sending message: ${error.message}`);
   }
-};export const addOrder = async (req, res) => {
-  console.log(req.body.mobileNumber, "Mobile Number For Testing");
+};
+
+export const addOrder = async (req, res) => {
+  console.log(req.body.mobileNumber,"Mobile Number For Testing");
   try {
     const uniqueOrderID = await generateOrderID(); // Assuming this function generates a unique ID
 
     const status = await saveOrder({ orderId: uniqueOrderID, ...req.body });
 
-    if (status === 'successful') {
-      // Assuming you want to send a message via Facebook Graph API only if the order is added successfully
+    if (status === 'successfull') {
+  
+
+    // Send a message via Facebook Graph API
       const apiResponse = await sendMessage(req.body.mobileNumber);
 
       res.status(201).json({ success: true, message: 'Successfully added order', apiResponse });
@@ -80,18 +73,51 @@ const sendMessage = async (mobileNumber) => {
   }
 };
 
-//get prodact services
 export const getAllOrder = async (req, res) => {
   try {
     const orders = await getAllOrders();
-    res.status(200).json({ success: true, orders: orders }); // Sending status and orders as an object
+
+    // Create an array to store enhanced order information
+    const ordersWithDetails = await Promise.all(orders.map(async (order) => {
+      // Create an array to store product details for the current order
+      const productsDetails = await Promise.all(order.products.map(async (orderDetails) => {
+        const productId = orderDetails.product;
+        console.log(`Processing product with ID: ${productId}`);
+
+        const productInfo = await getOneProduactService(productId);
+
+        if (!productInfo) {
+          console.error(`Product details not found for the given ID: ${productId}`);
+          return null; // Return null or handle appropriately
+        }
+
+        // Assuming availableStockQty is at the top level of the product schema
+        const productDetails = {
+          productName: productInfo.productName,
+          imageURL: productInfo.imageURL,
+          packetweight: productInfo.packetweight,
+          description: productInfo.description,
+          mrp: productInfo.mrp,
+          quantity: orderDetails.quantity,
+        };
+
+        return productDetails;
+      }));
+
+      // Flatten the productsDetails array
+      const flattenedDetails = [].concat(...productsDetails);
+
+      // Add the productsDetails array to the order object
+      return { ...order.toObject(), productsDetails: flattenedDetails };
+    }));
+
+    res.status(200).json({ success: true, orders: ordersWithDetails });
   } catch (error) {
     console.error("Error in getting orders:", error);
-    res
-      .status(500)
-      .json({ status: "error", message: "Error in getting orders" });
+    res.status(500).json({ status: "error", message: "Error in getting orders" });
   }
 };
+
 export const updateOrder = async (req, res) => {
   try {
     const id = req.params.id;
@@ -134,9 +160,40 @@ export const getOrderById1 = async (req, res) => {
   try {
     const id = req.params.id;
     const updateOrder = await getOrderById(id);
-    res
-      .status(200)
-      .json({ success: true, order: updateOrder });
+
+    if (!updateOrder) {
+      return res.status(404).json({ success: false, message: 'Order not found' });
+    }
+
+    // Create an array to store product details
+    const productsDetails = [];
+
+    for (const orderDetails of updateOrder.products) {
+      const productId = orderDetails.product;
+      console.log(`Processing product with ID: ${productId}`);
+
+      const productInfo = await getOneProduactService(productId);
+
+      if (!productInfo) {
+        console.error(`Product details not found for the given ID: ${productId}`);
+        continue; // Skip to the next iteration if product details are not found
+      }
+
+      // Assuming availableStockQty is at the top level of the product schema
+      const productDetails = {
+        product: productInfo.productName,
+        imageURL: productInfo.imageURL,
+        packetweight: productInfo.packetweight,
+        description: productInfo.description,
+        mrp: productInfo.mrp,
+        quantity: orderDetails.quantity,
+      };
+
+      // Add product details to the array
+      productsDetails.push(productDetails);
+    }
+
+    res.status(200).json({ success: true, order: updateOrder, productsDetails });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
