@@ -12,6 +12,7 @@ const userSchema = new mongoose.Schema({
     // Additional fields specific to shop users
     shopCategory: { type: String, enum: ['dates', 'clothing', 'groceries', 'others'] },
     // Add any other fields you need for your user model
+    //for commit
 });
 
 
