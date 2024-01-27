@@ -5,6 +5,7 @@ import { dbConnect } from "./db/dbConnect.js"
 import orderRoute from "./routers/orderRouter.js";
 import adminRoutes from "./routers/adminRoutes.js"
 import morgan from "morgan";
+import userRoutes from "./routers/userRoutes.js";
 dotenv.config();
  const corsOptions = {
     origin: '*', // Replace with the origin(s) you want to allow
@@ -26,11 +27,10 @@ dbConnect(dburl,dbname)
 app.use(express.json())
 
 
-
 app.use("/order", orderRoute)
-//app.use("/product",productRoute)
-
 app.use("/admin", adminRoutes)
+app.use('/user',userRoutes)
+
 
 app.listen(port, () => {
   console.log(`server started at port number  ${port}`)

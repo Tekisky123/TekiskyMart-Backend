@@ -13,12 +13,12 @@ const generateProductId = async () => {
 };
 
 export const addProductSerivce = async (data, imageUrl) => {
-    const productId = await generateProductId(); 
+    const productId = await generateProductId();
     try {
         const newProduct = new ProductModel({ ...data, imageURL: imageUrl, productId: productId });
-        
+
         const savedProduct = await newProduct.save();
-          console.log(savedProduct)
+        console.log(savedProduct)
         return 'successfull';
     } catch (error) {
         if (error.name === 'ValidationError') {
@@ -86,17 +86,30 @@ export const productDeleteService = async (id) => {
 
 export const getOneProduactService = async (productId) => {
     try {
-      const product = await ProductModel.findOne({ _id:productId }).exec();
-  
-      if (!product) {
-        console.error(`Product not found for the given ID: ${productId}`);
-        return null; // Return null or an empty object
-      }
-  
-      return product;
+        const product = await ProductModel.findOne({ _id: productId }).exec();
+
+        if (!product) {
+            console.error(`Product not found for the given ID: ${productId}`);
+            return null; // Return null or an empty object
+        }
+
+        return product;
     } catch (error) {
-      console.error('Error while getting product:', error);
-      throw error; // Re-throw the error to propagate it
+        console.error('Error while getting product:', error);
+        throw error; // Re-throw the error to propagate it
     }
-  };
-  
+};
+
+
+export const dealOfTheDayService = async () => {
+    try {
+        const dealProduct = await ProductModel.findOne({ dealOfDay: true })
+        return dealProduct
+    } catch (error) {
+        console.error('Error while getting dealProduct:', error);
+        throw error; // Re-throw the error to propagate it
+    }
+
+
+
+}

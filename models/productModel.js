@@ -1,12 +1,5 @@
 import mongoose from "mongoose";
 
-// const productDetailsSchema = new mongoose.Schema({
-//   availableStockQty: { type: Number, required: true },
-//   mrp: { type: Number, required: true },
-//   offerPrice: { type: Number, required: true, trim: true },
-//   packetnweight: { type: String, required: true, trim: true },
-// });
-
 
 const productSchema = new mongoose.Schema(
   {
@@ -24,7 +17,8 @@ const productSchema = new mongoose.Schema(
     imageURL: { type: Array, required: true },
     manufactureDate: { type: String, required: true, trim: true },
     expiryDate: { type: String, required: true, trim: true },
-    sellerInformation: { type: String }
+    sellerInformation: { type: String },
+    dealOfDay: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

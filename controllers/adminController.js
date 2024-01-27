@@ -1,8 +1,7 @@
 
-// import { addProdactSerivces, getProdactServioces, productUpdateService } from "../services/adminServices.js";
 import aws from "aws-sdk"
-import { addProductSerivce, getOneProduactService, getProductService, productDeleteService, productUpdateService } from "../services/adminServices.js";
-import { updateOrder } from "./orderController.js";
+import { addProductSerivce, dealOfTheDayService, getOneProduactService, getProductService, productDeleteService, productUpdateService } from "../services/adminServices.js";
+// import { updateOrder } from "./orderController.js";
 import dotenv from "dotenv"
 dotenv.config();
 
@@ -37,25 +36,25 @@ const uploadFile = async (file) => {
 // createing prodact in DB 
 export const addProduct = async (req, res) => {
     try {
-      if (req.files && req.files.length > 0) {
-        const imageProducts = await Promise.all(req.files.map(file => uploadFile(file)));
-        const uploadedImagesUrl = imageProducts.map(file => file.Location);
-  
-        const status = await addProductSerivce(req.body, uploadedImagesUrl);
-  
-        if (status === 'successfull') {
-          res.status(201).json({ success: true, message: "Successfully added product" });
+        if (req.files && req.files.length > 0) {
+            const imageProducts = await Promise.all(req.files.map(file => uploadFile(file)));
+            const uploadedImagesUrl = imageProducts.map(file => file.Location);
+
+            const status = await addProductSerivce(req.body, uploadedImagesUrl);
+
+            if (status === 'successfull') {
+                res.status(201).json({ success: true, message: "Successfully added product" });
+            } else {
+                throw new Error("Failed to add product");
+            }
         } else {
-          throw new Error("Failed to add product");
+            throw new Error("Please add an image");
         }
-      } else {
-        throw new Error("Please add an image");
-      }
     } catch (error) {
-      console.error('Error in controller adding product:', error.message);
-      res.status(500).json({ success: false, message: 'Error in controller adding product' });
+        console.error('Error in controller adding product:', error.message);
+        res.status(500).json({ success: false, message: 'Error in controller adding product' });
     }
-  };
+};
 
 //get prodact services 
 export const getProduct = async (req, res) => {
@@ -111,3 +110,16 @@ export const getOneProduact = async (req, res) => {
     }
 }
 
+
+
+export const dealOfTheDay = async (req, res) => {
+
+    try {
+        const getDealOfTheDay = await dealOfTheDayService();
+        res.status(200).json({ success: true, DealOfTheDay: getDealOfTheDay });
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message })
+    }
+
+
+}
