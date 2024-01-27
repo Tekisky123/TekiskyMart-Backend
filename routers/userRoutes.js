@@ -9,7 +9,7 @@ userRoutes.post('/createUser', createUser);
 userRoutes.post('/login', loginUser);
 userRoutes.get('/getUsers', getUsers);
 userRoutes.get('/updateUser/:mobileNumber', updateUser);
-userRoutes.get('/deleteUser/id', deleteUser);
-userRoutes.get('/getOneUser/id',getOneUser)
+userRoutes.get('/deleteUser/:id', deleteUser);
+userRoutes.get('/getOneUser/:id',getOneUser)
 
 export default userRoutes

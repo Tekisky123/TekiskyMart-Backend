@@ -1,6 +1,7 @@
 import UserModel from "../models/userModel.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken'
+
 const createUserService = async (userData) => {
   try {
     const { password, ...userDetails } = userData;
@@ -22,11 +23,11 @@ const createUserService = async (userData) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create and save the user in one step using create
-    await UserModel.create({
+    const user = new UserModel({
       ...userDetails,
       password: hashedPassword,
     });
-
+    await user.save();
     return { success: true, message: 'User created successfully' };
   } catch (error) {
     console.error('Error creating user:', error);
@@ -83,6 +84,7 @@ const getUsersService = async () => {
     return { success: false, error: 'Internal Server Error' };
   }
 };
+
 const updateUserService = async (mobileNumber, updateData) => {
   try {
         delete updateData.password;
@@ -90,7 +92,7 @@ const updateUserService = async (mobileNumber, updateData) => {
       const updatedUser = await UserModel.findOneAndUpdate(
           { mobileNumber: mobileNumber },
           updateData,
-          { new: true }
+          { new: true,projection: { password: 0 }}
       );
 
       if (!updatedUser) {
@@ -115,7 +117,7 @@ const deleteUserService = async (userId) => {
           throw new Error('User not found');
       }
 
-      return { success: true };
+      return true;
   } catch (error) {
       console.error('Error deleting user:', error);
       return { success: false, error: error.message || 'Internal Server Error' };

@@ -107,12 +107,12 @@ const deleteUser = async (req, res) => {
         const result = await deleteUserService(userId);
 
         // Check if the user deletion was successful
-        if (result.success) {
+        if (result) {
             console.log('User deleted successfully.');
             res.status(200).json({ message: 'User deleted successfully' });
         } else {
-            console.error('Error deleting user:', result.error);
-            res.status(404).json({ error: result.error });
+            console.error('Error deleting user:', result);
+            res.status(404).json({ error: result });
         }
     } catch (error) {
         console.error('Error deleting user:', error);
@@ -130,7 +130,7 @@ const getOneUser = async (req, res) => {
         const user = await getOneUserService(userId);
   
         // Check if the user retrieval was successful
-        if (result.success) {
+        if (user.success) {
             console.log('User retrieved successfully.');
             res.status(200).json({ user: user });
         } else {
