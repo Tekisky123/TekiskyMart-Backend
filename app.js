@@ -33,5 +33,5 @@ app.use('/user',userRoutes)
 
 
 app.listen(port, () => {
-  console.log(`server started at port number  ${port}`)
+  console.  log(`server started at port number  ${port}`)
 })
