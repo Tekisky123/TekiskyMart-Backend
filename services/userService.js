@@ -84,27 +84,35 @@ const getUsersService = async () => {
     return { success: false, error: 'Internal Server Error' };
   }
 };
+// userService.js
 
-const updateUserService = async (mobileNumber, updateData) => {
+const hashPassword = async (password) => {
+  const saltRounds = 10;
+  return bcrypt.hash(password, saltRounds);
+};
+
+const updateUserServiceById = async (_id, updateData) => {
   try {
-        delete updateData.password;
-      // Update user in the database based on mobileNumber
-      const updatedUser = await UserModel.findOneAndUpdate(
-          { mobileNumber: mobileNumber },
-          updateData,
-          { new: true,projection: { password: 0 }}
-      );
+      // Check if the updateData includes a password field
+      if ('password' in updateData) {
+          // Handle password update separately 
+          updateData.password = await hashPassword(updateData.password);
+      }
+
+      // Assuming User is a Mongoose model
+      const updatedUser = await UserModel.findByIdAndUpdate(_id, updateData, { new: true });
 
       if (!updatedUser) {
-          throw new Error('User not found');
+          return { success: false, error: 'User not found' };
       }
 
       return { success: true, updatedUser };
   } catch (error) {
-      console.error('Error updating user:', error);
-      return { success: false, error: error.message || 'Internal Server Error' };
+      return { success: false, error: error.message || 'Error updating user' };
   }
 };
+
+
 
 
 
@@ -142,4 +150,4 @@ const getOneUserService = async (userId) => {
 
 
 
-export { createUserService, loginService, getUsersService, updateUserService,deleteUserService,getOneUserService }
+export { createUserService, loginService, getUsersService, updateUserServiceById,deleteUserService,getOneUserService }

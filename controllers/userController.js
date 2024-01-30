@@ -1,4 +1,4 @@
-import { createUserService, loginService, getUsersService, updateUserService, deleteUserService, getOneUserService } from "../services/userService.js";
+import { createUserService, loginService, getUsersService, updateUserServiceById, deleteUserService, getOneUserService } from "../services/userService.js";
 import jwt from 'jsonwebtoken';
 
 // Controller function to create a new user
@@ -56,42 +56,22 @@ const getUsers = async (req, res) => {
 };
 
 
-
-const updateUser = async (req, res) => {
+const updateUserById = async (req, res) => {
     try {
-        const mobileNumber = req.params.mobileNumber;
-        console.log('mobile',mobileNumber) 
+        const userId = req.params.id;
         const updateData = req.body;
-        const authToken = req.header('Authorization');
 
-        // Verify the provided token
-        jwt.verify(authToken, process.env.JWT_SEC_KEY, { maxAge: '1d' }, async (error, decodedToken) => {
-            if (error) {
-                console.error('Error verifying token:', error);
-                return res.status(401).json({ error: 'Invalid token' });
-            }
+        // Update user using the updateUserService from userService
+        const updatedUser = await updateUserServiceById(userId, updateData);
 
-            console.log('Decoded Token:', decodedToken);
-            const tokenUserId = decodedToken.userId.toString();
-            const mobileNumberT = mobileNumber.toString();
-            // Check if the decoded token userId matches the requested mobileNumber
-            if (tokenUserId!== mobileNumberT) {
-                console.error('Unauthorized access to update user. Token user ID:', decodedToken.userId, 'Requested user ID:', mobileNumber);
-                return res.status(403).json({ error: 'Unauthorized access to update user' });
-            }
-
-            // Update user using the updateUserService from userService
-            const result = await updateUserService(mobileNumber, updateData);
-
-            // Check if the user update was successful
-            if (result.success) {
-                console.log('User updated successfully. Updated User:', result.updatedUser);
-                res.status(200).json({ message: 'User updated successfully', updatedUser: result.updatedUser });
-            } else {
-                console.error('Error updating user:', result.error);
-                res.status(404).json({ error: result.error });
-            }
-        });
+        // Check if the user update was successful
+        if (updatedUser.success) {
+            console.log('User updated successfully. Updated User:', updatedUser);
+            res.status(200).json({ message: 'User updated successfully', updatedUser: updatedUser });
+        } else {
+            console.error('Error updating user:', updatedUser.error);
+            res.status(404).json({ error: updatedUser.error });
+        }
     } catch (error) {
         console.error('Error updating user:', error);
         res.status(500).json({ error: error.message || 'Internal Server Error' });
@@ -145,4 +125,4 @@ const getOneUser = async (req, res) => {
   
 
 // Export the controller functions for use in routes
-export { createUser, loginUser, getUsers, updateUser,deleteUser,getOneUser };
+export { createUser, loginUser,updateUserById,getUsers,deleteUser,getOneUser };
