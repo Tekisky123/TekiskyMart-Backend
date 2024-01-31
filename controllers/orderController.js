@@ -97,6 +97,7 @@ export const getAllOrder = async (req, res) => {
           description: productInfo.description,
           mrp: productInfo.mrp,
           quantity: orderDetails.quantity,
+          createBy:productInfo.createdby
         };
 
         return productDetails;
@@ -115,6 +116,10 @@ export const getAllOrder = async (req, res) => {
     res.status(500).json({ status: "error", message: "Error in getting orders" });
   }
 };
+
+
+
+
 
 export const updateOrder = async (req, res) => {
   try {

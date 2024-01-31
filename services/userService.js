@@ -103,7 +103,7 @@ const updateUserServiceById = async (_id, updateData) => {
       const updatedUser = await UserModel.findByIdAndUpdate(_id, updateData, { new: true });
 
       if (!updatedUser) {
-          return { success: false, error: 'User not found' };
+          return { success: false, error: 'User not found',updatedUser };
       }
 
       return { success: true, updatedUser };
