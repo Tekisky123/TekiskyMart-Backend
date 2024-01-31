@@ -25,9 +25,10 @@ const loginUser = async (req, res) => {
         // Use the loginService from userService to authenticate the user
         const result = await loginService(loginData);
 
+
         // Check if login was successful
         if (result.success) {
-            res.status(200).json({ message: result.message, token: result.token });
+            res.status(200).json({ message: result.message, token: result.token,user:result.user });
         } else {
             res.status(401).json({ error: result.error });
         }

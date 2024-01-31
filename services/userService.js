@@ -65,7 +65,7 @@ const loginService = async (loginData) => {
     const token = jwt.sign({ userId: mobileNumber, }, process.env.JWT_SEC_KEY, {
       expiresIn: '1h',
     });
-    return { success: true, message: 'Login successful', token };
+    return { success: true, message: 'Login successful', token ,user };
   } catch (error) {
     console.error('Error during login:', error);
     return { success: false, error: error.message || 'Internal Server Error' };

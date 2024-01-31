@@ -5,6 +5,7 @@ const productSchema = new mongoose.Schema(
   {
     productId: { type: String, required: true, unique: true, trim: true },
     productCategory: { type: String, required: true, trim: true },
+    // otherCategory: { type: String, trim: true },
     productName: { type: String, required: true, trim: true },
     productType: { type: String, required: true, trim: true },
     productBrand: { type: String, required: true, trim: true },

@@ -48,7 +48,7 @@ const sendMessage = async (mobileNumber) => {
   } catch (error) {
     throw new Error(`Error sending message: ${error.message}`);
   }
-};
+}; 
 
 
 
