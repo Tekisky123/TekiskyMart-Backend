@@ -119,7 +119,7 @@ const updateUserServiceById = async (_id, updateData) => {
 const deleteUserService = async (userId) => {
   try {
       // Delete user in the database based on userId
-      const deletedUser = await UserModel.findOneAndDelete({ _id: userId });
+      const deletedUser = await UserModel.findByIdAndDelete({ _id: userId });
 
       if (!deletedUser) {
           throw new Error('User not found');

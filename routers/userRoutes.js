@@ -12,4 +12,5 @@ userRoutes.get('/updateUser/:id',updateUserById );
 userRoutes.get('/deleteUser/:id', deleteUser);
 userRoutes.get('/getOneUser/:id',getOneUser)
 
+
 export default userRoutes

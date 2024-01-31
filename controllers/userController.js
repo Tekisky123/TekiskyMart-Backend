@@ -88,10 +88,8 @@ const deleteUser = async (req, res) => {
 
         // Check if the user deletion was successful
         if (result) {
-            console.log('User deleted successfully.');
             res.status(200).json({ message: 'User deleted successfully' });
         } else {
-            console.error('Error deleting user:', result);
             res.status(404).json({ error: result });
         }
     } catch (error) {
@@ -105,10 +103,10 @@ const deleteUser = async (req, res) => {
 const getOneUser = async (req, res) => {
     try {
         const userId = req.params.id;
-  
+
         // Get user using the getOneUserService from userService
         const user = await getOneUserService(userId);
-  
+
         // Check if the user retrieval was successful
         if (user.success) {
             console.log('User retrieved successfully.');
@@ -121,8 +119,8 @@ const getOneUser = async (req, res) => {
         console.error('Error retrieving user:', error);
         res.status(500).json({ error: error.message || 'Internal Server Error' });
     }
-  };
-  
+};
+
 
 // Export the controller functions for use in routes
-export { createUser, loginUser,updateUserById,getUsers,deleteUser,getOneUser };
+export { createUser, loginUser, updateUserById, getUsers, deleteUser, getOneUser };
