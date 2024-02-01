@@ -10,22 +10,32 @@ import axios from "axios"
 dotenv.config()
 import { mongoose } from 'mongoose';
 
-import { getOneProduactService } from "../services/adminServices.js";
+import { getOneProductService } from "../services/adminServices.js";
 
 // Function to generate a unique order ID
-const generateOrderID = async () => {
+const generateOrderId = () => {
   try {
-    return new mongoose.Types.ObjectId().toHexString();
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hour = String(now.getHours()).padStart(2, '0');
+    const minute = String(now.getMinutes()).padStart(2, '0');
+    const second = String(now.getSeconds()).padStart(2, '0');
+    const tekiskyMart = 'TekiskyMart:'
+    let orderId = `${tekiskyMart}${year}${month}${day}${hour}${minute}${second}`
+    return orderId;
   } catch (error) {
     throw new Error("Failed to generate order ID: " + error.message);
   }
 };
 
 
+
 const sendMessage = async (mobileNumber) => {
   try {
     const accessToken = process.env.WHATSAPP_TOKEN;
-  
+
     const url = 'https://graph.facebook.com/v18.0/160700440470778/messages';
 
     const data = {
@@ -48,20 +58,20 @@ const sendMessage = async (mobileNumber) => {
   } catch (error) {
     throw new Error(`Error sending message: ${error.message}`);
   }
-}; 
+};
 
 
 
 export const addOrder = async (req, res) => {
 
   try {
-    const uniqueOrderID = await generateOrderID(); // Assuming this function generates a unique ID
+    const uniqueOrderID = await generateOrderId(); // this function generates a unique ID
 
     const status = await saveOrder({ orderId: uniqueOrderID, ...req.body });
 
-    if (status === 'successfull') {
-      const apiCall=await sendMessage(req.body.mobileNumber)
-      res.status(201).json({ success: true, message: 'Successfully added order', response:apiCall});
+    if (status.success) {
+      const apiCall = await sendMessage(req.body.mobileNumber)
+      res.status(201).json({ success: true, message: 'Successfully added order',order:status.order });
     } else {
       res.status(400).json({ success: false, message: 'Error while adding the order' });
     }
@@ -75,42 +85,7 @@ export const getAllOrder = async (req, res) => {
   try {
     const orders = await getAllOrders();
 
-    // Create an array to store enhanced order information
-    const ordersWithDetails = await Promise.all(orders.map(async (order) => {
-      // Create an array to store product details for the current order
-      const productsDetails = await Promise.all(order.products.map(async (orderDetails) => {
-        const productId = orderDetails.product;
-        console.log(`Processing product with ID: ${productId}`);
-
-        const productInfo = await getOneProduactService(productId);
-
-        if (!productInfo) {
-          console.error(`Product details not found for the given ID: ${productId}`);
-          return null; // Return null or handle appropriately
-        }
-
-        // Assuming availableStockQty is at the top level of the product schema
-        const productDetails = {
-          productName: productInfo.productName,
-          imageURL: productInfo.imageURL,
-          packetweight: productInfo.packetweight,
-          description: productInfo.description,
-          mrp: productInfo.mrp,
-          quantity: orderDetails.quantity,
-          createBy:productInfo.createdby
-        };
-
-        return productDetails;
-      }));
-
-      // Flatten the productsDetails array
-      const flattenedDetails = [].concat(...productsDetails);
-
-      // Add the productsDetails array to the order object
-      return { ...order.toObject(), productsDetails: flattenedDetails };
-    }));
-
-    res.status(200).json({ success: true, orders: ordersWithDetails });
+    res.status(200).json({ success: true, orders: orders });
   } catch (error) {
     console.error("Error in getting orders:", error);
     res.status(500).json({ status: "error", message: "Error in getting orders" });
@@ -163,40 +138,7 @@ export const getOrderById1 = async (req, res) => {
   try {
     const id = req.params.id;
     const updateOrder = await getOrderById(id);
-
-    if (!updateOrder) {
-      return res.status(404).json({ success: false, message: 'Order not found' });
-    }
-
-    // Create an array to store product details
-    const productsDetails = [];
-
-    for (const orderDetails of updateOrder.products) {
-      const productId = orderDetails.product;
-      console.log(`Processing product with ID: ${productId}`);
-
-      const productInfo = await getOneProduactService(productId);
-
-      if (!productInfo) {
-        console.error(`Product details not found for the given ID: ${productId}`);
-        continue; // Skip to the next iteration if product details are not found
-      }
-
-      // Assuming availableStockQty is at the top level of the product schema
-      const productDetails = {
-        product: productInfo.productName,
-        imageURL: productInfo.imageURL,
-        packetweight: productInfo.packetweight,
-        description: productInfo.description,
-        mrp: productInfo.mrp,
-        quantity: orderDetails.quantity,
-      };
-
-      // Add product details to the array
-      productsDetails.push(productDetails);
-    }
-
-    res.status(200).json({ success: true, order: updateOrder, productsDetails });
+    res.status(200).json({ success: true, order: updateOrder, updateOrder });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

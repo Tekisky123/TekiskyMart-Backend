@@ -1,7 +1,6 @@
 
 import aws from "aws-sdk"
-import { addProductSerivce, dealOfTheDayService, getOneProduactService, getProductService, productDeleteService, productUpdateService } from "../services/adminServices.js";
-// import { updateOrder } from "./orderController.js";
+import { addProductSerivce, dealOfTheDayService, getOneProductService, getProductService, productDeleteService, productUpdateService } from "../services/adminServices.js";
 import dotenv from "dotenv"
 dotenv.config();
 
@@ -97,11 +96,11 @@ export const deleteProduct = async (req, res) => {
 }
 
 
-export const getOneProduact = async (req, res) => {
+export const getOneProduct = async (req, res) => {
     const id = req.params.id
     try {
-        const getOneProduact = await getOneProduactService(id);
-        res.status(200).json({ success: true, getOneProduact: getOneProduact });
+        const getOneProduct = await getOneProductService(id);
+        res.status(200).json({ success: true, getOneProduct: getOneProduct });
 
     } catch (error) {
         console.log('error while getoneProduact catch block')

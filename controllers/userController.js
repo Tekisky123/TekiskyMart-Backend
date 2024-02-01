@@ -26,9 +26,10 @@ const loginUser = async (req, res) => {
         const result = await loginService(loginData);
 
 
+
         // Check if login was successful
         if (result.success) {
-            res.status(200).json({ message: result.message, token: result.token,user:result.user });
+            res.status(200).json({ message: result.message, token: result.token,user:result.user,orders:result.orders });
         } else {
             res.status(401).json({ error: result.error });
         }

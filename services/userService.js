@@ -1,6 +1,7 @@
 import UserModel from "../models/userModel.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken'
+import OrderModel from "../models/orderModel.js";
 
 const createUserService = async (userData) => {
   try {
@@ -19,6 +20,8 @@ const createUserService = async (userData) => {
       throw new Error('Mobile number or email is already taken');
     }
 
+
+
     // Hashing password
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -28,13 +31,15 @@ const createUserService = async (userData) => {
       password: hashedPassword,
     });
     await user.save();
-    return { success: true, message: 'User created successfully' };
+    // Find orders by matching createdBy field with user's mobileNumber
+   
+
+    return { success: true, message: 'User created successfully', user: user, };
   } catch (error) {
     console.error('Error creating user:', error);
     return { success: false, error: error.message || 'Internal Server Error' };
   }
 };
-
 
 const loginService = async (loginData) => {
   try {
@@ -42,30 +47,35 @@ const loginService = async (loginData) => {
 
     // Validate login data
     if (!mobileNumber || !password) {
-      throw new Error('Username and password are required');
+      throw new Error('Mobile number and password are required');
     }
 
-    // Find the user by username
+    // Find the user by mobile number
     const user = await UserModel.findOne({ mobileNumber });
 
     // Check if the user exists
     if (!user) {
-      throw new Error('Invalid username or password');
+      throw new Error('Invalid mobile number or password');
     }
 
     // Compare the provided password with the stored hashed password
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      throw new Error('Invalid username or password');
+      throw new Error('Invalid mobile number or password');
     }
 
+    // Find orders where any productDetails has a createdBy field matching the user's mobileNumber
+    const orders = await OrderModel.find({
+      'productDetails.createdBy': mobileNumber,
+    });
 
     // Generate a JWT token
-    const token = jwt.sign({ userId: mobileNumber, }, process.env.JWT_SEC_KEY, {
+    const token = jwt.sign({ userId: mobileNumber }, process.env.JWT_SEC_KEY, {
       expiresIn: '1h',
     });
-    return { success: true, message: 'Login successful', token ,user };
+
+    return { success: true, message: 'Login successful', token, user, orders };
   } catch (error) {
     console.error('Error during login:', error);
     return { success: false, error: error.message || 'Internal Server Error' };
@@ -93,22 +103,22 @@ const hashPassword = async (password) => {
 
 const updateUserServiceById = async (_id, updateData) => {
   try {
-      // Check if the updateData includes a password field
-      if ('password' in updateData) {
-          // Handle password update separately 
-          updateData.password = await hashPassword(updateData.password);
-      }
+    // Check if the updateData includes a password field
+    if ('password' in updateData) {
+      // Handle password update separately 
+      updateData.password = await hashPassword(updateData.password);
+    }
 
-      // Assuming User is a Mongoose model
-      const updatedUser = await UserModel.findByIdAndUpdate(_id, updateData, { new: true });
+    // Assuming User is a Mongoose model
+    const updatedUser = await UserModel.findByIdAndUpdate(_id, updateData, { new: true });
 
-      if (!updatedUser) {
-          return { success: false, error: 'User not found',updatedUser };
-      }
+    if (!updatedUser) {
+      return { success: false, error: 'User not found', updatedUser };
+    }
 
-      return { success: true, updatedUser };
+    return { success: true, updatedUser };
   } catch (error) {
-      return { success: false, error: error.message || 'Error updating user' };
+    return { success: false, error: error.message || 'Error updating user' };
   }
 };
 
@@ -118,36 +128,36 @@ const updateUserServiceById = async (_id, updateData) => {
 
 const deleteUserService = async (userId) => {
   try {
-      // Delete user in the database based on userId
-      const deletedUser = await UserModel.findByIdAndDelete({ _id: userId });
+    // Delete user in the database based on userId
+    const deletedUser = await UserModel.findByIdAndDelete({ _id: userId });
 
-      if (!deletedUser) {
-          throw new Error('User not found');
-      }
+    if (!deletedUser) {
+      throw new Error('User not found');
+    }
 
-      return true;
+    return true;
   } catch (error) {
-      console.error('Error deleting user:', error);
-      return { success: false, error: error.message || 'Internal Server Error' };
+    console.error('Error deleting user:', error);
+    return { success: false, error: error.message || 'Internal Server Error' };
   }
 };
 
 const getOneUserService = async (userId) => {
   try {
-      // Get user from the database based on userId
-      const user = await UserModel.findOne({ _id: userId });
+    // Get user from the database based on userId
+    const user = await UserModel.findOne({ _id: userId });
 
-      if (!user) {
-          throw new Error('User not found');
-      }
+    if (!user) {
+      throw new Error('User not found');
+    }
 
-      return { success: true, user };
+    return { success: true, user };
   } catch (error) {
-      console.error('Error retrieving user:', error);
-      return { success: false, error: error.message || 'Internal Server Error' };
+    console.error('Error retrieving user:', error);
+    return { success: false, error: error.message || 'Internal Server Error' };
   }
 };
 
 
 
-export { createUserService, loginService, getUsersService, updateUserServiceById,deleteUserService,getOneUserService }
+export { createUserService, loginService, getUsersService, updateUserServiceById, deleteUserService, getOneUserService }

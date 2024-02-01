@@ -84,7 +84,7 @@ export const productDeleteService = async (id) => {
 
 
 
-export const getOneProduactService = async (productId) => {
+export const getOneProductService = async (productId) => {
     try {
         const product = await ProductModel.findOne({ _id: productId }).exec();
 

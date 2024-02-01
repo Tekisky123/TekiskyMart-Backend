@@ -9,7 +9,9 @@ const userSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   role: { type: String, enum: ['superadmin', 'seller'], required: true },
   shopCategory: { type: String, required: true },
-  // Add any other fields you need for your user model
+  shopName:{ type: String, required: true },
+  shopAddress:{ type: String, required: true },
+  GST:{ type: String,  }
 });
 
 
