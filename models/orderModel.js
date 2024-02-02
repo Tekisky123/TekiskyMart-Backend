@@ -10,6 +10,7 @@ const productDetailsSchema = new mongoose.Schema({
   mrp: { type: Number, required: true },
   offerPrice: { type: Number, required: true },
   createdBy: { type: String, required: true },
+  quantity:{ type: Number, required: true }
 });
 
 

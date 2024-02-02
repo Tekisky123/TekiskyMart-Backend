@@ -42,7 +42,8 @@ const saveOrder = async (data) => {
           description: productInfo.description,
           mrp: productInfo.mrp,
           offerPrice:productInfo.offerPrice,
-          createdBy: productInfo.createdBy,  
+          createdBy: productInfo.createdBy, 
+          quantity:orderDetails.quantity 
         };
 
         // Push the product details to the array

@@ -29,7 +29,7 @@ const loginUser = async (req, res) => {
 
         // Check if login was successful
         if (result.success) {
-            res.status(200).json({ message: result.message, token: result.token,user:result.user,orders:result.orders });
+            res.status(200).json({success:true, message: result.message, token: result.token,user:result.user,orders:result.orders });
         } else {
             res.status(401).json({ error: result.error });
         }
