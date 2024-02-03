@@ -1,6 +1,6 @@
 
 import aws from "aws-sdk"
-import { addProductSerivce, dealOfTheDayService, getOneProductService, getProductService, productDeleteService, productUpdateService } from "../services/adminServices.js";
+import { addProductSerivce, dealOfTheDayService, getOneProductService, getProductService, productDeleteService, productUpdateService, getCategoriesService } from "../services/productServices.js";
 import dotenv from "dotenv"
 dotenv.config();
 
@@ -121,4 +121,16 @@ export const dealOfTheDay = async (req, res) => {
     }
 
 
+}
+
+export const getCategories = async(req,res) =>{
+    try {
+        const categories = await getCategoriesService()
+        res.status(200).json({
+            success:true,
+            categories : categories
+        })
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message })
+    }
 }

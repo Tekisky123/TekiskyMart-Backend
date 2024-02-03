@@ -1,6 +1,6 @@
 import OrderModel from "../models/orderModel.js";
 import ProductModel from "../models/productModel.js";
-import { getOneProductService } from "./adminServices.js";
+import { getOneProductService } from "./productServices.js";
 
 const saveOrder = async (data) => {
   try {

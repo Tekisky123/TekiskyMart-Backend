@@ -3,15 +3,26 @@ import ProductModel from "../models/productModel.js";
 
 import mongoose from 'mongoose';
 
-const generateProductId = async () => {
+const generateProductId = () => {
     try {
-        const productId = new mongoose.Types.ObjectId().toHexString();
-        return productId;
-    } catch (error) {
-        throw new Error("Failed to generate product ID: " + error.message);
-    }
-};
+      const now = new Date();
+      const year = String(now.getFullYear()).slice(-2);
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const hour = String(now.getHours()).padStart(2, '0');
+      const second = String(now.setSeconds()).padStart(2, '0')
+  
+      const tekiskyMart = 'TekiskyMart:';
+      const orderId = `${tekiskyMart}${year}${hour}${second}`;
 
+      return orderId;
+    } catch (error) {
+      throw new Error("Failed to generate order ID: " + error.message);
+    }
+  };
+  
+  
+  
 export const addProductSerivce = async (data, imageUrl) => {
     const productId = await generateProductId();
     try {
@@ -113,3 +124,17 @@ export const dealOfTheDayService = async () => {
 
 
 }
+
+export const getCategoriesService = async () => {
+    try {
+        const categories = await ProductModel.aggregate([
+            { $group: { _id: "$productCategory" } },
+            { $project: { _id: 0, category: "$_id" } }
+        ]);
+
+        return categories.map(category => category.category);
+    } catch (error) {
+        console.error("Error fetching categories:", error);
+        throw error; // Rethrow the error for handling in the calling code
+    }
+};

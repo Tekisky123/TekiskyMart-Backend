@@ -10,7 +10,7 @@ import axios from "axios"
 dotenv.config()
 import { mongoose } from 'mongoose';
 
-import { getOneProductService } from "../services/adminServices.js";
+import { getOneProductService } from "../services/productServices.js";
 
 // Function to generate a unique order IDlet orderCounter = 1001;
 let orderCounter = 10001;
@@ -23,7 +23,7 @@ const generateOrderId = () => {
     const hour = String(now.getHours()).padStart(2, '0');
 
     const tekiskyMart = 'TekiskyMart:';
-    const orderId = `${tekiskyMart}${orderCounter}`;
+    const orderId = `${tekiskyMart}${year}${hour}${orderCounter}`;
 
     orderCounter += 1; // Increment the counter for the next order
 
