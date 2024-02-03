@@ -11,22 +11,21 @@ const enquirySchema = new mongoose.Schema({
         type : Boolean,
         required : true
     },
+    GST : {
+        type : String
+    },
     doYouHaveShop : {
         type : Boolean,
         required : true
     },
-    GST : {
-        type : String
+    shopName : {
+        type : String,
     },
     productDetails : {
         type : String,
         required : true
     },
     mobileNumber : {
-        type : String,
-        required : true,
-    },
-    shopName : {
         type : String,
         required : true,
     },
