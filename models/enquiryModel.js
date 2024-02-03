@@ -37,6 +37,6 @@ const enquirySchema = new mongoose.Schema({
 })
 
 
-const enquiryModel = mongoose.model("enquiry" , enquirySchema)
+const EnquiryModel = mongoose.model("enquiry" , enquirySchema)
 
-export default enquiryModel
+export default EnquiryModel

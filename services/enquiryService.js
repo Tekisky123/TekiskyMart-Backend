@@ -1,10 +1,9 @@
-import enquiryModel from "../models/enquiryModel.js"
+import EnquiryModel from "../models/enquiryModel.js"
 
-enquiryModel
 
 export const acceptEnquiryService = async(enquiryData) =>{
     try {
-        const enquiry = await enquiryModel(enquiryData)
+        const enquiry = await EnquiryModel(enquiryData)
         enquiry.save()
         return 'success'
     } catch (error) {
