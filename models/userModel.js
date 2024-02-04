@@ -8,9 +8,9 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
   role: { type: String, enum: ['superadmin', 'seller'], required: true },
-  shopCategory: { type: String, required: true },
-  shopName:{ type: String, required: true },
-  shopAddress:{ type: String, required: true },
+  shopCategory: { type: String },
+  shopName:{ type: String},
+  shopAddress:{ type: String },
   GST:{ type: String,  }
 });
 

@@ -12,7 +12,7 @@ export const acceptEnquiryService = async(enquiryData) =>{
 }
 export const getEnquiryService = async() =>{
     try {
-        const enquiry = await enquiryModel.find()
+        const enquiry = await EnquiryModel.find()
         return enquiry
     } catch (error) {
         console.log(error.message)
