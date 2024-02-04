@@ -12,8 +12,10 @@ import { mongoose } from 'mongoose';
 
 import { getOneProductService } from "../services/productServices.js";
 
-// Function to generate a unique order IDlet orderCounter = 1001;
+
+
 let orderCounter = 10001;
+
 const generateOrderId = () => {
   try {
     const now = new Date();
@@ -33,26 +35,28 @@ const generateOrderId = () => {
   }
 };
 
-// Reset the counter when needed, for example, at the start of a new day
-const resetOrderCounter = () => {
-  orderCounter = 1001;
-};
-
-
-
-const sendMessage = async (mobileNumber) => {
+const sendMessage = async (mobileNumber, orderId) => {
   try {
     const accessToken = process.env.WHATSAPP_TOKEN;
-
     const url = 'https://graph.facebook.com/v18.0/160700440470778/messages';
 
-    const data = {
+    const templateData = {
       messaging_product: 'whatsapp',
-      to: mobileNumber,
       type: 'template',
       template: {
-        name: 'hello_world',
+        name: 'tekiskymart',
         language: { code: 'en_US' },
+        components: [
+          {
+            type: 'body',
+            parameters: [
+              {
+                type: 'text',
+                text: ` ${orderId}`,
+              },
+            ],
+          },
+        ],
       },
     };
 
@@ -61,6 +65,7 @@ const sendMessage = async (mobileNumber) => {
       Authorization: `Bearer ${accessToken}`,
     };
 
+    const data = { ...templateData, to: mobileNumber };
     const response = await axios.post(url, data, { headers });
     return response.data;
   } catch (error) {
@@ -68,18 +73,21 @@ const sendMessage = async (mobileNumber) => {
   }
 };
 
-
-
 export const addOrder = async (req, res) => {
-
   try {
-    const uniqueOrderID = await generateOrderId(); // this function generates a unique ID
-
+    const uniqueOrderID = generateOrderId();
     const status = await saveOrder({ orderId: uniqueOrderID, ...req.body });
 
     if (status.success) {
-      const apiCall = await sendMessage(req.body.mobileNumber)
-      res.status(201).json({ success: true, message: 'Successfully added order',order:status.order });
+      const mobileNumber = req.body.mobileNumber;
+      const apiCalls = await sendMessage(mobileNumber, uniqueOrderID);
+
+      res.status(201).json({
+        success: true,
+        message: 'Successfully added order',
+        order: status.order,
+        apiResponses: apiCalls,
+      });
     } else {
       res.status(400).json({ success: false, message: 'Error while adding the order' });
     }
