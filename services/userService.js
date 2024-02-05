@@ -68,7 +68,7 @@ const loginService = async (loginData) => {
     // Find orders where any productDetails has a createdBy field matching the user's mobileNumber
     const orders = await OrderModel.find({
       'productDetails.createdBy': mobileNumber,
-    });
+    });  
 
     // Generate a JWT token
     const token = jwt.sign({ userId: mobileNumber }, process.env.JWT_SEC_KEY, {

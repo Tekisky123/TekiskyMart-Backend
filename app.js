@@ -35,8 +35,6 @@ app.use('/user', userRoutes)
 app.use('/client', enquiryRoutes)
 app.use('/pre', preOrderRoutes)
 
-
 app.listen(port, () => {
   console.log(`server started at port number  ${port}`)
 })
-

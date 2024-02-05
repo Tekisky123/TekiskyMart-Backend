@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema({
   shopCategory: { type: String },
   shopName:{ type: String},
   shopAddress:{ type: String },
-  GST:{ type: String,  }
+  GST:{ type: String  }
 });
 
 
