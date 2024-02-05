@@ -103,11 +103,11 @@ export const findProductsByMobileNumber = async (req, res) => {
       const createdBy = req.params.mobileNumber;
   
       // Use findOne if mobileNumber is not the document ID
-      const productData = await ProductModel.find({ createdBy });
+      const products = await ProductModel.find({ createdBy });
   
-      if (productData) {
+      if (products) {
         // Send the found data as a JSON response
-        res.status(200).json({ productData, message: 'Data found successfully' });
+        res.status(200).json({ products, message: 'Data found successfully' });
       } else {
         // Send a 404 response if no data is found
         res.status(404).json({ message: 'No data found for the provided mobile number' });
