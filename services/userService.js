@@ -72,7 +72,7 @@ const loginService = async (loginData) => {
 
     // Generate a JWT token
     const token = jwt.sign({ userId: mobileNumber }, process.env.JWT_SEC_KEY, {
-      expiresIn: '1h',
+      expiresIn: '1d',
     });
 
     return { success: true, message: 'Login successful', token, user, orders };
