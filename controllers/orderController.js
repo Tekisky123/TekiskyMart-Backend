@@ -14,7 +14,7 @@ import { getOneProductService } from "../services/productServices.js";
 
 
 
-let orderCounter = 10001;
+let orderCounter = 1001;
 
 const generateOrderId = () => {
   try {
@@ -25,7 +25,7 @@ const generateOrderId = () => {
     const hour = String(now.getHours()).padStart(2, '0');
 
     const tekiskyMart = 'TekiskyMart:';
-    const orderId = `${tekiskyMart}${year}${hour}${orderCounter}`;
+    const orderId = `${tekiskyMart}${hour}${orderCounter}`;
 
     orderCounter += 1; // Increment the counter for the next order
 
