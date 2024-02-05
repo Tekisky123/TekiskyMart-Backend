@@ -1,21 +1,39 @@
 import { createUserService, loginService, getUsersService, updateUserServiceById, deleteUserService, getOneUserService } from "../services/userService.js";
 import jwt from 'jsonwebtoken';
 
-// Controller function to create a new user
+// Controller function to create a new user 
 const createUser = async (req, res) => {
     try {
-        // Create a new user using the createUserService from userService
-        const newUser = await createUserService(req.body);
-
-        // Check if user creation was successful
-        if (newUser.success) {
-            res.status(201).json({ message: 'User created successfully' });
+      // Create a new user using the createUserService from userService
+      const newUserResponse = await createUserService(req.body);
+  
+      // Check if user creation was successful
+      if (newUserResponse.success) {
+        const { user } = newUserResponse;
+  
+        // Exclude the password field from the user object
+        const userWithoutPassword = { ...user._doc };
+        delete userWithoutPassword.password;
+  
+        return res.status(201).json({ message: 'User created successfully', user: userWithoutPassword });
+      } else {
+        const { error } = newUserResponse;
+  
+        // Check if the error is due to a duplicate user
+        if (error === 'Mobile number or email is already taken') {
+          return res.status(401).json({ error: 'User already exists' });
         }
+  
+        return res.status(400).json({ error });
+      }
     } catch (error) {
-        console.error('Error creating user:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+      console.error('Error creating user:', error);
+      return res.status(500).json({ error: 'Internal Server Error' });
     }
-};
+  };
+  
+
+ 
 
 // Controller function to handle user login
 const loginUser = async (req, res) => {
