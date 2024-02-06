@@ -28,7 +28,7 @@ dbConnect(dburl, dbname)
 
 app.use(express.json())
 
-
+ 
 app.use("/order", orderRoute)
 app.use("/product", adminRoutes)
 app.use('/user', userRoutes)

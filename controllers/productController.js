@@ -53,7 +53,7 @@ export const addProduct = async (req, res) => {
         }
     } catch (error) {
         console.error('Error in controller adding product:', error.message);
-        res.status(500).json({ success: false, message: 'Error in controller adding product' });
+        res.status(500).json({ success: false, message: error.message });
     }
 };
 
