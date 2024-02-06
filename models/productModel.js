@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 const productSchema = new mongoose.Schema(
   {
     productId: { type: String, required: true, unique: true, trim: true },
-    header:{ type: String, required: true, trim: true },
+    header: { type: String, required: true, trim: true },
     productCategory: { type: String, required: true, trim: true },
     otherCategory: { type: String, trim: true },
     productName: { type: String, required: true, trim: true },
@@ -21,6 +21,7 @@ const productSchema = new mongoose.Schema(
     manufactureDate: { type: String, required: true, trim: true },
     expiryDate: { type: String, required: true, trim: true },
     sellerInformation: { type: String },
+    approved: { type: Boolean, required: true, default: false },
     dealOfDay: { type: Boolean, default: false },
   },
   { timestamps: true }
