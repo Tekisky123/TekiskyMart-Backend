@@ -1,6 +1,6 @@
 
 import aws from "aws-sdk"
-import { addProductSerivce, dealOfTheDayService, getOneProductService, getProductService, productDeleteService, productUpdateService, getCategoriesService } from "../services/productServices.js";
+import { addProductSerivce, dealOfTheDayService, getOneProductService, getProductService, productDeleteService, productUpdateService, getCategoriesService, getApprovedProductService } from "../services/productServices.js";
 import dotenv from "dotenv"
 import UserModel from "../models/userModel.js";
 import ProductModel from "../models/productModel.js";
@@ -100,25 +100,25 @@ export const deleteProduct = async (req, res) => {
 
 export const findProductsByMobileNumber = async (req, res) => {
     try {
-      const createdBy = req.params.mobileNumber;
-  
-      // Use findOne if mobileNumber is not the document ID
-      const products = await ProductModel.find({ createdBy });
-  
-      if (products) {
-        // Send the found data as a JSON response
-        res.status(200).json({ products, message: 'Data found successfully' });
-      } else {
-        // Send a 404 response if no data is found
-        res.status(404).json({ message: 'No data found for the provided mobile number' });
-      }
+        const createdBy = req.params.mobileNumber;
+
+        // Use findOne if mobileNumber is not the document ID
+        const products = await ProductModel.find({ createdBy });
+
+        if (products) {
+            // Send the found data as a JSON response
+            res.status(200).json({ products, message: 'Data found successfully' });
+        } else {
+            // Send a 404 response if no data is found
+            res.status(404).json({ message: 'No data found for the provided mobile number' });
+        }
     } catch (error) {
-      console.error('Error:', error.message);
-      // Send a 500 response for internal server error
-      res.status(500).json({ error: 'Internal Server Error' });
+        console.error('Error:', error.message);
+        // Send a 500 response for internal server error
+        res.status(500).json({ error: 'Internal Server Error' });
     }
-  };
-   
+};
+
 
 
 export const getOneProduct = async (req, res) => {
@@ -159,3 +159,22 @@ export const getCategories = async (req, res) => {
         res.status(400).json({ success: false, message: error.message })
     }
 }
+
+
+export const getApprovedProduct = async (req, res) => {
+  try {
+    const approvedProduct = await getApprovedProductService();
+    
+    res.status(200).json({
+      success: true,
+      data: approvedProduct
+    });
+  } catch (error) {
+    console.error(error.message);
+    
+    res.status(500).json({
+      success: false,
+      message: 'Error retrieving approved products'
+    });
+  }
+};

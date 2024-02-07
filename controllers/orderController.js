@@ -34,8 +34,7 @@ const generateOrderId = () => {
     throw new Error("Failed to generate order ID: " + error.message);
   }
 };
-
-const sendMessage = async (mobileNumber, orderId) => {
+const sendMessage = async (mobileNumber, customerName) => {
   try {
     const accessToken = process.env.WHATSAPP_TOKEN;
     const url = 'https://graph.facebook.com/v18.0/160700440470778/messages';
@@ -44,7 +43,7 @@ const sendMessage = async (mobileNumber, orderId) => {
       messaging_product: 'whatsapp',
       type: 'template',
       template: {
-        name: 'tekiskymart',
+        name: 'confirmationmessage',
         language: { code: 'en_US' },
         components: [
           {
@@ -52,7 +51,7 @@ const sendMessage = async (mobileNumber, orderId) => {
             parameters: [
               {
                 type: 'text',
-                text: ` ${orderId}`,
+                text: ` ${customerName}${mobileNumber}`,
               },
             ],
           },
@@ -80,21 +79,22 @@ export const addOrder = async (req, res) => {
 
     if (status.success) {
       const mobileNumber = req.body.mobileNumber;
-      const apiCalls = await sendMessage(mobileNumber, uniqueOrderID);
+      const name = req.body.customerName;
+      const apiCalls = await sendMessage(name,mobileNumber,);
 
       res.status(201).json({
         success: true,
         message: 'Successfully added order',
         order: status.order,
-        apiResponses: apiCalls,
+       
       });
     } else {
       res.status(400).json({ success: false, message: 'Error while adding the order' });
     }
   } catch (error) {
     console.error('Error in controller adding order:', error);
-    res.status(500).json({ success: false, message: error.message });
-  }
+    res.status(500).json({ success: false, message: error.message });
+ }
 };
 
 export const getAllOrder = async (req, res) => {

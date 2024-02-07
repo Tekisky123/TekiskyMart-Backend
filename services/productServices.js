@@ -5,24 +5,24 @@ import mongoose from 'mongoose';
 
 const generateProductId = () => {
     try {
-      const now = new Date();
-      const year = String(now.getFullYear()).slice(-2);
-      const month = String(now.getMonth() + 1).padStart(2, '0');
-      const day = String(now.getDate()).padStart(2, '0');
-      const hour = String(now.getHours()).padStart(2, '0');
-      const second = String(now.getSeconds()).padStart(2, '0')
-  
-      const tekiskyMart = 'TekiskyMart:';
-      const orderId = `${tekiskyMart}${year}${hour}${second}`;
+        const now = new Date();
+        const year = String(now.getFullYear()).slice(-2);
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hour = String(now.getHours()).padStart(2, '0');
+        const second = String(now.getSeconds()).padStart(2, '0')
 
-      return orderId;
+        const tekiskyMart = 'TekiskyMart:';
+        const orderId = `${tekiskyMart}${year}${hour}${second}`;
+
+        return orderId;
     } catch (error) {
-      throw new Error("Failed to generate order ID: " + error.message);
+        throw new Error("Failed to generate order ID: " + error.message);
     }
-  };
-  
-  
-  
+};
+
+
+
 export const addProductSerivce = async (data, imageUrl) => {
     const productId = await generateProductId();
     try {
@@ -137,4 +137,20 @@ export const getCategoriesService = async () => {
         console.error("Error fetching categories:", error);
         throw error; // Rethrow the error for handling in the calling code
     }
+};
+
+
+export const getApprovedProductService = async () => {
+  try {
+    const approvedProducts = await ProductModel.find({ approved: true });
+
+    if (approvedProducts.length === 0) {
+      throw new Error('No approved products found');
+    }
+
+    return approvedProducts;
+  } catch (error) {
+    console.error(error.message);
+    throw error;
+  }
 };

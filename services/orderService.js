@@ -63,7 +63,6 @@ const saveOrder = async (data) => {
     }
 
     data.productDetails = productsDetails;
-    console.log(data);
 
     const newOrder = new OrderModel(data);  
     const savedOrder = await newOrder.save();

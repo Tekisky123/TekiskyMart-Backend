@@ -29,10 +29,10 @@ dbConnect(dburl, dbname)
 app.use(express.json())
 
  
+app.use('/client', enquiryRoutes)
 app.use("/order", orderRoute)
 app.use("/product", adminRoutes)
 app.use('/user', userRoutes)
-app.use('/client', enquiryRoutes)
 app.use('/pre', preOrderRoutes)
 
 app.listen(port, () => {
