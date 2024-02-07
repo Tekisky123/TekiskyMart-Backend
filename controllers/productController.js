@@ -167,7 +167,7 @@ export const getApprovedProduct = async (req, res) => {
     
     res.status(200).json({
       success: true,
-      data: approvedProduct
+      products: approvedProduct
     });
   } catch (error) {
     console.error(error.message);
