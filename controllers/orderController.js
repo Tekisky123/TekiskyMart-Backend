@@ -12,9 +12,7 @@ import { mongoose } from 'mongoose';
 
 import { getOneProductService } from "../services/productServices.js";
 
-
-
-let orderCounter = 1001;
+let orderCounter =10001
 
 const generateOrderId = () => {
   try {
@@ -25,7 +23,7 @@ const generateOrderId = () => {
     const hour = String(now.getHours()).padStart(2, '0');
 
     const tekiskyMart = 'TekiskyMart:';
-    const orderId = `${tekiskyMart}${hour}${orderCounter}`;
+    const orderId = `${tekiskyMart}${orderCounter}`;
 
     orderCounter += 1; // Increment the counter for the next order
 
@@ -34,6 +32,7 @@ const generateOrderId = () => {
     throw new Error("Failed to generate order ID: " + error.message);
   }
 };
+
 const sendMessage = async (mobileNumber, customerName) => {
   try {
     const accessToken = process.env.WHATSAPP_TOKEN;
@@ -51,7 +50,7 @@ const sendMessage = async (mobileNumber, customerName) => {
             parameters: [
               {
                 type: 'text',
-                text: ` ${customerName}${mobileNumber}`,
+                text: `${customerName}${mobileNumber}`,
               },
             ],
           },
@@ -80,21 +79,34 @@ export const addOrder = async (req, res) => {
     if (status.success) {
       const mobileNumber = req.body.mobileNumber;
       const name = req.body.customerName;
-      const apiCalls = await sendMessage(name,mobileNumber,);
+      
+      try {
+        // Attempt to send the message
+        const apiCalls = await sendMessage(mobileNumber, name);
 
-      res.status(201).json({
-        success: true,
-        message: 'Successfully added order',
-        order: status.order,
-       
-      });
+        // If the message is sent successfully, respond with success
+        res.status(201).json({
+          success: true,
+          message: 'Successfully added order',
+          order: status.order,
+        });
+      } catch (error) {
+        // If an error occurs while sending the message, log the error and respond with success for the order
+        console.error('Error sending message:', error);
+
+        res.status(201).json({
+          success: true,
+          message: 'Successfully added order, but there was an error sending the message',
+          order: status.order,
+        });
+      }
     } else {
       res.status(400).json({ success: false, message: 'Error while adding the order' });
     }
   } catch (error) {
     console.error('Error in controller adding order:', error);
-    res.status(500).json({ success: false, message: error.message });
- }
+    res.status(500).json({ success: false, message: error.message });
+  }
 };
 
 export const getAllOrder = async (req, res) => {
