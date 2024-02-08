@@ -12,8 +12,7 @@ import { mongoose } from 'mongoose';
 
 import { getOneProductService } from "../services/productServices.js";
 
-let orderCounter =10001
-
+let orderCounter = 10001
 const generateOrderId = () => {
   try {
     const now = new Date();
@@ -31,79 +30,102 @@ const generateOrderId = () => {
   } catch (error) {
     throw new Error("Failed to generate order ID: " + error.message);
   }
-};
-
-const sendMessage = async (mobileNumber, customerName) => {
+}; const sendMessage = async (mobileNumber, customerName, productName, packetweight, unitOfMeasure, quantity) => {
   try {
     const accessToken = process.env.WHATSAPP_TOKEN;
     const url = 'https://graph.facebook.com/v18.0/160700440470778/messages';
 
+    // Construct the message template data
     const templateData = {
       messaging_product: 'whatsapp',
       type: 'template',
       template: {
-        name: 'confirmationmessage',
-        language: { code: 'en_US' },
+        name: 'tekiskymart',
+        language: {
+          code: 'en_US'
+        },
         components: [
           {
             type: 'body',
             parameters: [
               {
                 type: 'text',
-                text: `${customerName}${mobileNumber}`,
+                text: `${customerName}!`
               },
-            ],
-          },
-        ],
-      },
+              {
+                type: 'text',
+                text: `${productName}`
+              },
+              {
+                type: 'text',
+                text: `Weight: ${packetweight + unitOfMeasure} `
+              },
+              {
+                type: 'text',
+                text: ` ${quantity}`
+              },
+              {
+                type: 'text',
+                text: ` ${mobileNumber}`
+              }
+            ]
+          }
+        ]
+      }
     };
 
+    // Set the request headers
     const headers = {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`,
+      Authorization: `Bearer ${accessToken}`
     };
 
+    // Set the recipient and data for the message
     const data = { ...templateData, to: mobileNumber };
+
+    // Send the message using Axios
     const response = await axios.post(url, data, { headers });
-    return response.data;
+
+    // Check the response status
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error(`WhatsApp API request failed with status code ${response.status}`);
+    }
   } catch (error) {
-    throw new Error(`Error sending message: ${error.message}`);
+    throw new Error(`Error sending WhatsApp message: ${error.message}`);
   }
 };
-
 export const addOrder = async (req, res) => {
   try {
+    // Generate a unique order ID
     const uniqueOrderID = generateOrderId();
+
+    // Save the order
     const status = await saveOrder({ orderId: uniqueOrderID, ...req.body });
 
+    // Check if the order was successfully saved
     if (status.success) {
-      const mobileNumber = req.body.mobileNumber;
-      const name = req.body.customerName;
-      
-      try {
-        // Attempt to send the message
-        const apiCalls = await sendMessage(mobileNumber, name);
+      const { mobileNumber, customerName, productDetails } = status.order;
 
-        // If the message is sent successfully, respond with success
-        res.status(201).json({
-          success: true,
-          message: 'Successfully added order',
-          order: status.order,
-        });
-      } catch (error) {
-        // If an error occurs while sending the message, log the error and respond with success for the order
-        console.error('Error sending message:', error);
-
-        res.status(201).json({
-          success: true,
-          message: 'Successfully added order, but there was an error sending the message',
-          order: status.order,
-        });
+      // Send order confirmation message for each product detail
+      for (const productDetail of productDetails) {
+        const { productName, packetweight, unitOfMeasure, quantity } = productDetail;
+        await sendMessage(mobileNumber, customerName, productName, packetweight, unitOfMeasure, quantity);
       }
+
+      // Respond with success message
+      res.status(201).json({
+        success: true,
+        message: 'Successfully added order',
+        order: status.order
+      });
     } else {
+      // Respond with error message if order was not successfully saved
       res.status(400).json({ success: false, message: 'Error while adding the order' });
     }
   } catch (error) {
+    // Log and respond with error message if an error occurs
     console.error('Error in controller adding order:', error);
     res.status(500).json({ success: false, message: error.message });
   }
