@@ -31,8 +31,7 @@ const generateOrderId = () => {
     throw new Error("Failed to generate order ID: " + error.message);
   }
 };
-
-const sendMessage = async (mobileNumber, customerName, productName, packetweight, unitOfMeasure, quantity) => {
+const sendMessage = async (senderNumber, recipientNumber, customerName, productName, packetweight, unitOfMeasure, quantity) => {
   try {
     const accessToken = process.env.WHATSAPP_TOKEN;
     const url = 'https://graph.facebook.com/v18.0/160700440470778/messages';
@@ -68,7 +67,7 @@ const sendMessage = async (mobileNumber, customerName, productName, packetweight
               },
               {
                 type: 'text',
-                text: ` ${mobileNumber}`
+                text: ` ${senderNumber}`
               }
             ]
           }
@@ -83,7 +82,7 @@ const sendMessage = async (mobileNumber, customerName, productName, packetweight
     };
 
     // Set the recipient and data for the message
-    const data = { ...templateData, to: mobileNumber };
+    const data = { ...templateData, to: recipientNumber };
 
     // Send the message using Axios
     const response = await axios.post(url, data, { headers });
@@ -110,15 +109,18 @@ export const addOrder = async (req, res) => {
     // Check if the order was successfully saved
     if (status.success) {
       const { mobileNumber, customerName, productDetails } = status.order;
-      const allNumbers = [mobileNumber, '6281017334', '7842363997']; // All numbers to send messages to, including primary and additional numbers
+      const additionalNumbers = ['7842363997', '6281017334']; // Additional numbers to send messages to
 
       // Loop through product details
       for (const productDetail of productDetails) {
         const { productName, packetweight, unitOfMeasure, quantity } = productDetail;
 
-        // Send order confirmation message for each product detail to all numbers
-        for (const number of allNumbers) {
-          await sendMessage(number, customerName, productName, packetweight, unitOfMeasure, quantity);
+        // Send order confirmation message to the customer
+        await sendMessage(mobileNumber, mobileNumber, customerName, productName, packetweight, unitOfMeasure, quantity);
+
+        // Send order confirmation message to additional numbers
+        for (const additionalNumber of additionalNumbers) {
+          await sendMessage(mobileNumber, additionalNumber, customerName, productName, packetweight, unitOfMeasure, quantity);
         }
       }
 
@@ -138,6 +140,7 @@ export const addOrder = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 
 export const getAllOrder = async (req, res) => {
