@@ -85,6 +85,8 @@ export const updateProduct = async (req, res) => {
         res.status(400).json({ success: false, message: error.message });
     }
 };
+
+
 export const deleteProduct = async (req, res) => {
     try {
         const id = req.params.id

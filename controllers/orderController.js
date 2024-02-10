@@ -30,7 +30,9 @@ const generateOrderId = () => {
   } catch (error) {
     throw new Error("Failed to generate order ID: " + error.message);
   }
-}; const sendMessage = async (mobileNumber, customerName, productName, packetweight, unitOfMeasure, quantity) => {
+};
+
+const sendMessage = async (mobileNumber, customerName, productName, packetweight, unitOfMeasure, quantity) => {
   try {
     const accessToken = process.env.WHATSAPP_TOKEN;
     const url = 'https://graph.facebook.com/v18.0/160700440470778/messages';
@@ -96,6 +98,7 @@ const generateOrderId = () => {
     throw new Error(`Error sending WhatsApp message: ${error.message}`);
   }
 };
+
 export const addOrder = async (req, res) => {
   try {
     // Generate a unique order ID
@@ -107,11 +110,16 @@ export const addOrder = async (req, res) => {
     // Check if the order was successfully saved
     if (status.success) {
       const { mobileNumber, customerName, productDetails } = status.order;
+      const allNumbers = [mobileNumber, '6281017334', '7842363997']; // All numbers to send messages to, including primary and additional numbers
 
-      // Send order confirmation message for each product detail
+      // Loop through product details
       for (const productDetail of productDetails) {
         const { productName, packetweight, unitOfMeasure, quantity } = productDetail;
-        await sendMessage(mobileNumber, customerName, productName, packetweight, unitOfMeasure, quantity);
+
+        // Send order confirmation message for each product detail to all numbers
+        for (const number of allNumbers) {
+          await sendMessage(number, customerName, productName, packetweight, unitOfMeasure, quantity);
+        }
       }
 
       // Respond with success message
@@ -130,6 +138,7 @@ export const addOrder = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 export const getAllOrder = async (req, res) => {
   try {

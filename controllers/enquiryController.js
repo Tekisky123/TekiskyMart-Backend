@@ -3,7 +3,7 @@ import { acceptEnquiryService, getEnquiryService } from "../services/enquiryServ
 
 export const acceptEnquiry =  async(req,res) =>{
     try {
-        console.log("===>" , req.body)
+       
         const data = await acceptEnquiryService(req.body)
         if(data == 'success'){
             res.status(201).json({

@@ -30,7 +30,7 @@ const orderSchema = new mongoose.Schema({
   productDetails: [productDetailsSchema],
   orderStatus: {
     type: String,
-    default: 'new order',
+    default: 'New Order',
     enum: ['New Order', 'order-verified', 'Dispatched', 'order-cancelled', 'Delivered'],
   },
   feedback: { type: String, trim: true },
