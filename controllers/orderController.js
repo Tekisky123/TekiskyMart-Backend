@@ -109,7 +109,7 @@ export const addOrder = async (req, res) => {
     // Check if the order was successfully saved
     if (status.success) {
       const { mobileNumber, customerName, productDetails } = status.order;
-      const additionalNumbers = ['7842363997', '6281017334']; // Additional numbers to send messages to
+      const additionalNumbers = ['7842363997', '6281017334']; 
 
       // Loop through product details
       for (const productDetail of productDetails) {
@@ -118,7 +118,7 @@ export const addOrder = async (req, res) => {
         // Send order confirmation message to the customer
         await sendMessage(mobileNumber, mobileNumber, customerName, productName, packetweight, unitOfMeasure, quantity);
 
-        // Send order confirmation message to additional numbers
+        // Send order confirmation message to junaid sir and umair sir 
         for (const additionalNumber of additionalNumbers) {
           await sendMessage(mobileNumber, additionalNumber, customerName, productName, packetweight, unitOfMeasure, quantity);
         }
