@@ -8,6 +8,7 @@ import adminRoutes from "./routers/productRoutes.js"
 import userRoutes from "./routers/userRoutes.js";
 import enquiryRoutes from "./routers/enquiryRoutes.js";
 import preOrderRoutes from "./routers/preOrderRoutes.js";
+import morgan from "morgan"
 dotenv.config();
 const corsOptions = {
   origin: '*', // Replace with the origin(s) you want to allow
