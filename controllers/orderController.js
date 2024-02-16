@@ -206,21 +206,6 @@ export const getOrderById1 = async (req, res) => {
   }
 };
 
-export const webhooks=async (req,res) =>{
-  try{
-    
-    
-  }
-
-  }catch(err){
-   res.sendStatus(500)
-  }
-}
 
 
-export const webhooksget=async (req,res)=>{
-  try{
-      }catch(err){
-    res.sendStatus(500)
-  }
-}
+
