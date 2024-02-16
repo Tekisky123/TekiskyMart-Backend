@@ -3,22 +3,33 @@ import ProductModel from "../models/productModel.js";
 
 import mongoose from 'mongoose';
 
-const generateProductId = async () => {
+const generateProductId = () => {
     try {
-        const productId = new mongoose.Types.ObjectId().toHexString();
-        return productId;
+        const now = new Date();
+        const year = String(now.getFullYear()).slice(-2);
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hour = String(now.getHours()).padStart(2, '0');
+        const second = String(now.getSeconds()).padStart(2, '0')
+
+        const tekiskyMart = 'TekiskyMart:';
+        const orderId = `${tekiskyMart}${year}${hour}${second}`;
+
+        return orderId;
     } catch (error) {
-        throw new Error("Failed to generate product ID: " + error.message);
+        throw new Error("Failed to generate order ID: " + error.message);
     }
 };
 
+
+
 export const addProductSerivce = async (data, imageUrl) => {
-    const productId = await generateProductId(); 
+    const productId = await generateProductId();
     try {
         const newProduct = new ProductModel({ ...data, imageURL: imageUrl, productId: productId });
-        
+
         const savedProduct = await newProduct.save();
-          console.log(savedProduct)
+        console.log(savedProduct)
         return 'successfull';
     } catch (error) {
         if (error.name === 'ValidationError') {
@@ -84,19 +95,62 @@ export const productDeleteService = async (id) => {
 
 
 
-export const getOneProduactService = async (productId) => {
+export const getOneProductService = async (productId) => {
     try {
-      const product = await ProductModel.findOne({ _id:productId }).exec();
-  
-      if (!product) {
-        console.error(`Product not found for the given ID: ${productId}`);
-        return null; // Return null or an empty object
-      }
-  
-      return product;
+        const product = await ProductModel.findOne({ _id: productId }).exec();
+
+        if (!product) {
+            console.error(`Product not found for the given ID: ${productId}`);
+            return null; // Return null or an empty object
+        }
+
+        return product;
     } catch (error) {
-      console.error('Error while getting product:', error);
-      throw error; // Re-throw the error to propagate it
+        console.error('Error while getting product:', error);
+        throw error; // Re-throw the error to propagate it
     }
-  };
-  
+};
+
+
+export const dealOfTheDayService = async () => {
+    try {
+        const dealProduct = await ProductModel.findOne({ dealOfDay: true })
+        return dealProduct
+    } catch (error) {
+        console.error('Error while getting dealProduct:', error);
+        throw error; // Re-throw the error to propagate it
+    }
+
+
+
+}
+
+export const getCategoriesService = async () => {
+    try {
+        const categories = await ProductModel.aggregate([
+            { $group: { _id: "$productCategory" } },
+            { $project: { _id: 0, category: "$_id" } }
+        ]);
+
+        return categories.map(category => category.category);
+    } catch (error) {
+        console.error("Error fetching categories:", error);
+        throw error; // Rethrow the error for handling in the calling code
+    }
+};
+
+
+export const getApprovedProductService = async () => {
+  try {
+    const approvedProducts = await ProductModel.find({ approved: true });
+
+    if (approvedProducts.length === 0) {
+      throw new Error('No approved products found');
+    }
+
+    return approvedProducts;
+  } catch (error) {
+    console.error(error.message);
+    throw error;
+  }
+};
