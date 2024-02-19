@@ -5,23 +5,23 @@ import {
   deleteOrderById,
   updateOrderById,
 } from "../services/orderService.js";
-import dotenv from 'dotenv';
-import axios from "axios"
-dotenv.config()
-import { mongoose } from 'mongoose';
+import dotenv from "dotenv";
+import axios from "axios";
+dotenv.config();
+import { mongoose } from "mongoose";
 
 import { getOneProductService } from "../services/productServices.js";
 
-let orderCounter = 10001
+let orderCounter = 10001;
 const generateOrderId = () => {
   try {
     const now = new Date();
     const year = String(now.getFullYear()).slice(-2);
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const hour = String(now.getHours()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    const hour = String(now.getHours()).padStart(2, "0");
 
-    const tekiskyMart = 'TekiskyMart:';
+    const tekiskyMart = "TekiskyMart:";
     const orderId = `${tekiskyMart}${orderCounter}`;
 
     orderCounter += 1; // Increment the counter for the next order
@@ -31,54 +31,73 @@ const generateOrderId = () => {
     throw new Error("Failed to generate order ID: " + error.message);
   }
 };
-const sendMessage = async (senderNumber, recipientNumber, customerName, productName, packetweight, unitOfMeasure, quantity) => {
+
+const sendMessage = async (
+  senderNumber,
+  recipientNumber,
+  customerName,
+  productName,
+  packetweight,
+  unitOfMeasure,
+  quantity,
+  address,
+  totalAmount
+) => {
   try {
     const accessToken = process.env.WHATSAPP_TOKEN;
-    const url = 'https://graph.facebook.com/v18.0/160700440470778/messages';
+    const url = "https://graph.facebook.com/v18.0/160700440470778/messages";
 
     // Construct the message template data
     const templateData = {
-      messaging_product: 'whatsapp',
-      type: 'template',
+      messaging_product: "whatsapp",
+      type: "template",
       template: {
-        name: 'tekiskymart',
+        name: "tekiskymart",
         language: {
-          code: 'en_US'
+          code: "en_US",
         },
         components: [
           {
-            type: 'body',
+            type: "body",
             parameters: [
               {
-                type: 'text',
-                text: `${customerName}!`
+                type: "text",
+                text: `${customerName}!`,
               },
               {
-                type: 'text',
-                text: `${productName}`
+                type: "text",
+                text: `${productName}`,
               },
               {
-                type: 'text',
-                text: `Weight: ${packetweight + unitOfMeasure} `
+                type: "text",
+                text: `Weight: ${packetweight + unitOfMeasure} `,
               },
               {
-                type: 'text',
-                text: ` ${quantity}`
+                type: "text",
+                text: ` ${quantity}`,
               },
               {
-                type: 'text',
-                text: ` ${senderNumber}`
-              }
-            ]
-          }
-        ]
-      }
+                type: "text",
+                text: ` ${senderNumber}`,
+              },
+              {
+                type: "text",
+                text: ` ${address}`,
+              },
+              {
+                type: "text",
+                text: ` ${totalAmount}`,
+              },
+            ],
+          },
+        ],
+      },
     };
 
     // Set the request headers
     const headers = {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
     };
 
     // Set the recipient and data for the message
@@ -88,13 +107,13 @@ const sendMessage = async (senderNumber, recipientNumber, customerName, productN
     const response = await axios.post(url, data, { headers });
 
     // Check the response status
-    if (response.status === 200) {
-      return response.data;
-    } else {
-      throw new Error(`WhatsApp API request failed with status code ${response.status}`);
+     // Log any errors during sending, but do not throw an error
+     if (response.status !== 200) {
+      console.error(`WhatsApp API request failed with status code ${response.status}`);
     }
   } catch (error) {
-    throw new Error(`Error sending WhatsApp message: ${error.message}`);
+    // Log any errors during sending, but do not throw an error
+    console.error("Error sending WhatsApp message:", error);
   }
 };
 
@@ -108,40 +127,67 @@ export const addOrder = async (req, res) => {
 
     // Check if the order was successfully saved
     if (status.success) {
-      const { mobileNumber, customerName, productDetails } = status.order;
-      const additionalNumbers = ['7842363997', '6281017334']; 
+      const {
+        mobileNumber,
+        customerName,
+        productDetails,
+        totalAmount,
+        address,
+      } = status.order;
+      const additionalNumbers = ["6281017334", "7842363997"];
 
       // Loop through product details
       for (const productDetail of productDetails) {
-        const { productName, packetweight, unitOfMeasure, quantity } = productDetail;
+        const { productName, packetweight, unitOfMeasure, quantity } =
+          productDetail;
 
         // Send order confirmation message to the customer
-        await sendMessage(mobileNumber, mobileNumber, customerName, productName, packetweight, unitOfMeasure, quantity);
+        await sendMessage(
+          mobileNumber,
+          mobileNumber,
+          customerName,
+          productName,
+          packetweight,
+          unitOfMeasure,
+          quantity,
+          address,
+          totalAmount
+        );
 
-        // Send order confirmation message to junaid sir and umair sir 
+        // Send order confirmation message to junaid sir and umair sir
         for (const additionalNumber of additionalNumbers) {
-          await sendMessage(mobileNumber, additionalNumber, customerName, productName, packetweight, unitOfMeasure, quantity);
+          await sendMessage(
+            mobileNumber,
+            additionalNumber,
+            customerName,
+            productName,
+            packetweight,
+            unitOfMeasure,
+            quantity,
+            address,
+            totalAmount
+          );
         }
       }
 
       // Respond with success message
       res.status(201).json({
         success: true,
-        message: 'Successfully added order',
-        order: status.order
+        message: "Successfully added order",
+        order: status.order,
       });
     } else {
       // Respond with error message if order was not successfully saved
-      res.status(400).json({ success: false, message: 'Error while adding the order' });
+      res
+        .status(400)
+        .json({ success: false, message: "Error while adding the order" });
     }
   } catch (error) {
     // Log and respond with error message if an error occurs
-    console.error('Error in controller adding order:', error);
+    console.error("Error in controller adding order:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
-
-
 
 export const getAllOrder = async (req, res) => {
   try {
@@ -150,13 +196,11 @@ export const getAllOrder = async (req, res) => {
     res.status(200).json({ success: true, orders: orders });
   } catch (error) {
     console.error("Error in getting orders:", error);
-    res.status(500).json({ status: "error", message: "Error in getting orders" });
+    res
+      .status(500)
+      .json({ status: "error", message: "Error in getting orders" });
   }
 };
-
-
-
-
 
 export const updateOrder = async (req, res) => {
   try {
@@ -205,7 +249,3 @@ export const getOrderById1 = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
-
-
-
-

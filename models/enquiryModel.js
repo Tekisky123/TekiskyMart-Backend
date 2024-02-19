@@ -32,9 +32,10 @@ const enquirySchema = new mongoose.Schema({
     whichProductYouHaveToSell : {
         type : String,
         required : true
-    }
+    },
 
-})
+
+},{ timestamps: true })
 
 
 const EnquiryModel = mongoose.model("enquiry" , enquirySchema)

@@ -127,6 +127,7 @@ export const getOneProduct = async (req, res) => {
     const id = req.params.id
     try {
         const getOneProduct = await getOneProductService(id);
+        
         res.status(200).json({ success: true, getOneProduct: getOneProduct });
 
     } catch (error) {

@@ -1,6 +1,6 @@
 
 import ProductModel from "../models/productModel.js";
-
+import translate from "google-translate-api";
 import mongoose from 'mongoose';
 
 const generateProductId = () => {
@@ -98,12 +98,12 @@ export const productDeleteService = async (id) => {
 export const getOneProductService = async (productId) => {
     try {
         const product = await ProductModel.findOne({ _id: productId }).exec();
-
+        
         if (!product) {
             console.error(`Product not found for the given ID: ${productId}`);
             return null; // Return null or an empty object
         }
-
+        
         return product;
     } catch (error) {
         console.error('Error while getting product:', error);
