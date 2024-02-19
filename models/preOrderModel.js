@@ -6,7 +6,6 @@ const preOrderSchema = new mongoose.Schema({
     whichProductWantToPurchase: { type: String, required: true, trim: true },
     quantity: { type: Number, required: true, trim: true },
     description: { type: String },
-    date: { type: Date, default: Date.now }
 }, { timestamps: true });
 
 const preOrderModel = mongoose.model('pre-orders', preOrderSchema);
