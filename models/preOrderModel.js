@@ -9,6 +9,6 @@ const preOrderSchema = new mongoose.Schema({
     date: { type: Date, default: Date.now }
 }, { timestamps: true });
 
-const preOrderModel = mongoose.model('pre-order', preOrderSchema);
+const preOrderModel = mongoose.model('pre-orders', preOrderSchema);
 
 export default preOrderModel;
