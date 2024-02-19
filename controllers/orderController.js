@@ -142,32 +142,32 @@ export const addOrder = async (req, res) => {
           productDetail;
 
         // Send order confirmation message to the customer
-        await sendMessage(
-          mobileNumber,
-          mobileNumber,
-          customerName,
-          productName,
-          packetweight,
-          unitOfMeasure,
-          quantity,
-          address,
-          totalAmount
-        );
+        // await sendMessage(
+        //   mobileNumber,
+        //   mobileNumber,
+        //   customerName,
+        //   productName,
+        //   packetweight,
+        //   unitOfMeasure,
+        //   quantity,
+        //   address,
+        //   totalAmount
+        // );
 
         // Send order confirmation message to junaid sir and umair sir
-        for (const additionalNumber of additionalNumbers) {
-          await sendMessage(
-            mobileNumber,
-            additionalNumber,
-            customerName,
-            productName,
-            packetweight,
-            unitOfMeasure,
-            quantity,
-            address,
-            totalAmount
-          );
-        }
+        // for (const additionalNumber of additionalNumbers) {
+        //   await sendMessage(
+        //     mobileNumber,
+        //     additionalNumber,
+        //     customerName,
+        //     productName,
+        //     packetweight,
+        //     unitOfMeasure,
+        //     quantity,
+        //     address,
+        //     totalAmount
+        //   );
+        // }
       }
 
       // Respond with success message
