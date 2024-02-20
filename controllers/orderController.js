@@ -33,17 +33,20 @@ const generateOrderId = () => {
 };
 
 
+
+
+
+
 const sendMessage = async (
   senderNumber,
   recipientNumber,
-  customerName,
   productName,
   packetweight,
   unitOfMeasure,
   quantity,
   address,
   totalAmount,
-  orderId
+  
 ) => {
   try {
     const accessToken = process.env.WHATSAPP_TOKEN;
@@ -55,7 +58,7 @@ const sendMessage = async (
       messaging_product: "whatsapp",
       type: "template",
       template: {
-        name: "tekiskymart",
+        name: "demo",
         language: {
           code: "en_US",
         },
@@ -86,24 +89,13 @@ const sendMessage = async (
               {
                 type: "text",
                 text: `${totalAmount}`,
-              },
-            ],
+              }
+            ]
           },
-          {
-            type: "buttons",
-           buttons: [
-            {
-              type: "URL",
-              text: "visit",
-              url: `${baseUrl}${orderId}`
-            }
-           ]
-          },
+         
         ],
       },
     };
-    
-
 
     // Set the request headers
     const headers = {
@@ -114,18 +106,32 @@ const sendMessage = async (
     // Set the recipient and data for the message
     const data = { ...templateData, to: recipientNumber };
 
+    // Log the data being sent
+    console.log("Sending message with data:", JSON.stringify(data));
+
     // Send the message using Axios
     const response = await axios.post(url, data, { headers });
+
+    // Log the response
+    console.log("WhatsApp API response:", response.data);
 
     // Check the response status
     if (response.status !== 200) {
       console.error(`WhatsApp API request failed with status code ${response.status}`);
+    } else {
+      console.log("Message sent successfully!");
     }
   } catch (error) {
-    // Log any errors during sending, but do not throw an error
+    // Log any errors during sending
     console.error("Error sending WhatsApp message:", error.message);
+    if (error.response) {
+      console.error("WhatsApp API error response:", error.response.data);
+    }
   }
 };
+
+
+
 
 export const addOrder = async (req, res) => {
   try {
@@ -156,7 +162,6 @@ export const addOrder = async (req, res) => {
         await sendMessage(
           mobileNumber,
           mobileNumber,
-          customerName,
           productName,
           packetweight,
           unitOfMeasure,
