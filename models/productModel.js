@@ -22,6 +22,7 @@ const productSchema = new mongoose.Schema(
     sellerInformation: { type: String },
     approved: { type: Boolean, required: true, default: false },
     dealOfDay: { type: Boolean, default: false },
+    tekiskyPrice:{type:String,required:true,},
     // New fields for clothing
     size: { type: String, trim: true },
     color: { type: String, trim: true },

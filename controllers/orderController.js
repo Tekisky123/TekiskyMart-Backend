@@ -32,6 +32,7 @@ const generateOrderId = () => {
   }
 };
 
+
 const sendMessage = async (
   senderNumber,
   recipientNumber,
@@ -41,10 +42,12 @@ const sendMessage = async (
   unitOfMeasure,
   quantity,
   address,
-  totalAmount
+  totalAmount,
+  orderId
 ) => {
   try {
     const accessToken = process.env.WHATSAPP_TOKEN;
+    const baseUrl = "https://tekiskymart.com/";
     const url = "https://graph.facebook.com/v18.0/160700440470778/messages";
 
     // Construct the message template data
@@ -62,37 +65,45 @@ const sendMessage = async (
             parameters: [
               {
                 type: "text",
-                text: `${customerName}!`,
-              },
-              {
-                type: "text",
                 text: `${productName}`,
               },
               {
                 type: "text",
-                text: `Weight: ${packetweight + unitOfMeasure} `,
+                text: `Weight: ${packetweight} ${unitOfMeasure}`,
               },
               {
                 type: "text",
-                text: ` ${quantity}`,
+                text: `${quantity}`,
               },
               {
                 type: "text",
-                text: ` ${senderNumber}`,
+                text: `${senderNumber}`,
               },
               {
                 type: "text",
-                text: ` ${address}`,
+                text: `${address}`,
               },
               {
                 type: "text",
-                text: ` ${totalAmount}`,
+                text: `${totalAmount}`,
               },
             ],
+          },
+          {
+            type: "buttons",
+           buttons: [
+            {
+              type: "URL",
+              text: "visit",
+              url: `${baseUrl}${orderId}`
+            }
+           ]
           },
         ],
       },
     };
+    
+
 
     // Set the request headers
     const headers = {
@@ -107,23 +118,22 @@ const sendMessage = async (
     const response = await axios.post(url, data, { headers });
 
     // Check the response status
-     // Log any errors during sending, but do not throw an error
-     if (response.status !== 200) {
+    if (response.status !== 200) {
       console.error(`WhatsApp API request failed with status code ${response.status}`);
     }
   } catch (error) {
     // Log any errors during sending, but do not throw an error
-    console.error("Error sending WhatsApp message:", error);
+    console.error("Error sending WhatsApp message:", error.message);
   }
 };
 
 export const addOrder = async (req, res) => {
   try {
     // Generate a unique order ID
-    const uniqueOrderID = generateOrderId();
+    const uniqueOrderID = generateOrderId(); // Assuming generateOrderId is defined elsewhere
 
     // Save the order
-    const status = await saveOrder({ orderId: uniqueOrderID, ...req.body });
+    const status = await saveOrder({ orderId: uniqueOrderID, ...req.body }); // Assuming saveOrder is defined elsewhere
 
     // Check if the order was successfully saved
     if (status.success) {
@@ -133,6 +143,7 @@ export const addOrder = async (req, res) => {
         productDetails,
         totalAmount,
         address,
+        orderId
       } = status.order;
       const additionalNumbers = ["6281017334", "7842363997"];
 
@@ -142,17 +153,18 @@ export const addOrder = async (req, res) => {
           productDetail;
 
         // Send order confirmation message to the customer
-        // await sendMessage(
-        //   mobileNumber,
-        //   mobileNumber,
-        //   customerName,
-        //   productName,
-        //   packetweight,
-        //   unitOfMeasure,
-        //   quantity,
-        //   address,
-        //   totalAmount
-        // );
+        await sendMessage(
+          mobileNumber,
+          mobileNumber,
+          customerName,
+          productName,
+          packetweight,
+          unitOfMeasure,
+          quantity,
+          address,
+          totalAmount,
+          orderId
+        );
 
         // Send order confirmation message to junaid sir and umair sir
         // for (const additionalNumber of additionalNumbers) {
@@ -188,6 +200,7 @@ export const addOrder = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 export const getAllOrder = async (req, res) => {
   try {

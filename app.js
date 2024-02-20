@@ -17,6 +17,7 @@ const corsOptions = {
   optionsSuccessStatus: 200, // Some legacy browsers choke on 204
 };
 
+
 // Enable CORS for all routes
 const app = express()
 app.use(cors(corsOptions))
