@@ -32,21 +32,10 @@ const generateOrderId = () => {
   }
 };
 
-
-
-
-
-
 const sendMessage = async (
   senderNumber,
   recipientNumber,
-  productName,
-  packetweight,
-  unitOfMeasure,
-  quantity,
-  address,
-  totalAmount,
-  
+  _id
 ) => {
   try {
     const accessToken = process.env.WHATSAPP_TOKEN;
@@ -58,7 +47,7 @@ const sendMessage = async (
       messaging_product: "whatsapp",
       type: "template",
       template: {
-        name: "demo",
+        name: "tekiskymart",
         language: {
           code: "en_US",
         },
@@ -68,31 +57,10 @@ const sendMessage = async (
             parameters: [
               {
                 type: "text",
-                text: `${productName}`,
+                text: `https://tekiskymart.com/order-bill/${_id}`,
               },
-              {
-                type: "text",
-                text: `Weight: ${packetweight} ${unitOfMeasure}`,
-              },
-              {
-                type: "text",
-                text: `${quantity}`,
-              },
-              {
-                type: "text",
-                text: `${senderNumber}`,
-              },
-              {
-                type: "text",
-                text: `${address}`,
-              },
-              {
-                type: "text",
-                text: `${totalAmount}`,
-              }
-            ]
+            ],
           },
-         
         ],
       },
     };
@@ -117,7 +85,9 @@ const sendMessage = async (
 
     // Check the response status
     if (response.status !== 200) {
-      console.error(`WhatsApp API request failed with status code ${response.status}`);
+      console.error(
+        `WhatsApp API request failed with status code ${response.status}`
+      );
     } else {
       console.log("Message sent successfully!");
     }
@@ -130,9 +100,6 @@ const sendMessage = async (
   }
 };
 
-
-
-
 export const addOrder = async (req, res) => {
   try {
     // Generate a unique order ID
@@ -143,14 +110,8 @@ export const addOrder = async (req, res) => {
 
     // Check if the order was successfully saved
     if (status.success) {
-      const {
-        mobileNumber,
-        customerName,
-        productDetails,
-        totalAmount,
-        address,
-        orderId
-      } = status.order;
+      const { mobileNumber, customerName, productDetails, totalAmount, _id } =
+        status.order;
       const additionalNumbers = ["6281017334", "7842363997"];
 
       // Loop through product details
@@ -158,33 +119,23 @@ export const addOrder = async (req, res) => {
       //   const { productName, packetweight, unitOfMeasure, quantity } =
       //     productDetail;
 
-      //   // Send order confirmation message to the customer
+      // Send order confirmation message to the customer
+      await sendMessage(mobileNumber, mobileNumber, _id);
+
+      // Send order confirmation message to junaid sir and umair sir
+      // for (const additionalNumber of additionalNumbers) {
       //   await sendMessage(
       //     mobileNumber,
-      //     mobileNumber,
+      //     additionalNumber,
+      //     customerName,
       //     productName,
       //     packetweight,
       //     unitOfMeasure,
       //     quantity,
       //     address,
-      //     totalAmount,
-      //     orderId
+      //     totalAmount
       //   );
-
-      //   // Send order confirmation message to junaid sir and umair sir
-      //   // for (const additionalNumber of additionalNumbers) {
-      //   //   await sendMessage(
-      //   //     mobileNumber,
-      //   //     additionalNumber,
-      //   //     customerName,
-      //   //     productName,
-      //   //     packetweight,
-      //   //     unitOfMeasure,
-      //   //     quantity,
-      //   //     address,
-      //   //     totalAmount
-      //   //   );
-      //   // }
+      // }
       // }
 
       // Respond with success message
@@ -205,7 +156,6 @@ export const addOrder = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
-
 
 export const getAllOrder = async (req, res) => {
   try {
