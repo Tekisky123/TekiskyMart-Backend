@@ -154,38 +154,38 @@ export const addOrder = async (req, res) => {
       const additionalNumbers = ["6281017334", "7842363997"];
 
       // Loop through product details
-      for (const productDetail of productDetails) {
-        const { productName, packetweight, unitOfMeasure, quantity } =
-          productDetail;
+      // for (const productDetail of productDetails) {
+      //   const { productName, packetweight, unitOfMeasure, quantity } =
+      //     productDetail;
 
-        // Send order confirmation message to the customer
-        await sendMessage(
-          mobileNumber,
-          mobileNumber,
-          productName,
-          packetweight,
-          unitOfMeasure,
-          quantity,
-          address,
-          totalAmount,
-          orderId
-        );
+      //   // Send order confirmation message to the customer
+      //   await sendMessage(
+      //     mobileNumber,
+      //     mobileNumber,
+      //     productName,
+      //     packetweight,
+      //     unitOfMeasure,
+      //     quantity,
+      //     address,
+      //     totalAmount,
+      //     orderId
+      //   );
 
-        // Send order confirmation message to junaid sir and umair sir
-        // for (const additionalNumber of additionalNumbers) {
-        //   await sendMessage(
-        //     mobileNumber,
-        //     additionalNumber,
-        //     customerName,
-        //     productName,
-        //     packetweight,
-        //     unitOfMeasure,
-        //     quantity,
-        //     address,
-        //     totalAmount
-        //   );
-        // }
-      }
+      //   // Send order confirmation message to junaid sir and umair sir
+      //   // for (const additionalNumber of additionalNumbers) {
+      //   //   await sendMessage(
+      //   //     mobileNumber,
+      //   //     additionalNumber,
+      //   //     customerName,
+      //   //     productName,
+      //   //     packetweight,
+      //   //     unitOfMeasure,
+      //   //     quantity,
+      //   //     address,
+      //   //     totalAmount
+      //   //   );
+      //   // }
+      // }
 
       // Respond with success message
       res.status(201).json({
