@@ -32,11 +32,7 @@ const generateOrderId = () => {
   }
 };
 
-const sendMessage = async (
-  senderNumber,
-  recipientNumber,
-  _id
-) => {
+const sendMessage = async (senderNumber, recipientNumber, _id) => {
   try {
     const accessToken = process.env.WHATSAPP_TOKEN;
     const baseUrl = "https://tekiskymart.com/";
@@ -114,29 +110,13 @@ export const addOrder = async (req, res) => {
         status.order;
       const additionalNumbers = ["6281017334", "7842363997"];
 
-      // Loop through product details
-      // for (const productDetail of productDetails) {
-      //   const { productName, packetweight, unitOfMeasure, quantity } =
-      //     productDetail;
-
       // Send order confirmation message to the customer
-      // await sendMessage(mobileNumber, mobileNumber, _id);
+      await sendMessage(mobileNumber, mobileNumber, _id);
 
       // Send order confirmation message to junaid sir and umair sir
-      // for (const additionalNumber of additionalNumbers) {
-      //   await sendMessage(
-      //     mobileNumber,
-      //     additionalNumber,
-      //     customerName,
-      //     productName,
-      //     packetweight,
-      //     unitOfMeasure,
-      //     quantity,
-      //     address,
-      //     totalAmount
-      //   );
-      // }
-      // }
+      for (const additionalNumber of additionalNumbers) {
+        await sendMessage(mobileNumber, additionalNumber, _id);
+      }
 
       // Respond with success message
       res.status(201).json({
@@ -218,30 +198,26 @@ export const getOrderById1 = async (req, res) => {
   }
 };
 
-
-
-
 export const logoutUserController = (req, res) => {
-    try {
-        // Check if user is authenticated
-        if (req.session && req.session.user) {
-          
-            // Clear the user session
-            req.session.destroy(err => {
-                if (err) {
-                    // If there's an error destroying the session, send a 500 response
-                    res.status(500).json({ error: "Unable to logout user." });
-                } else {
-                    // Respond with a success message
-                    res.status(200).json({ message: "User logged out successfully." });
-                }
-            });
+  try {
+    // Check if user is authenticated
+    if (req.session && req.session.user) {
+      // Clear the user session
+      req.session.destroy((err) => {
+        if (err) {
+          // If there's an error destroying the session, send a 500 response
+          res.status(500).json({ error: "Unable to logout user." });
         } else {
-            // If user is not authenticated, send a 401 response
-            res.status(401).json({ error: "User not authenticated." });
+          // Respond with a success message
+          res.status(200).json({ message: "User logged out successfully." });
         }
-    } catch (error) {
-        // If an error occurs, respond with an error message
-        res.status(500).json({ error: "Internal server error." });
+      });
+    } else {
+      // If user is not authenticated, send a 401 response
+      res.status(401).json({ error: "User not authenticated." });
     }
+  } catch (error) {
+    // If an error occurs, respond with an error message
+    res.status(500).json({ error: "Internal server error." });
+  }
 };
