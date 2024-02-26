@@ -8,6 +8,7 @@ import adminRoutes from "./routers/productRoutes.js"
 import userRoutes from "./routers/userRoutes.js";
 import enquiryRoutes from "./routers/enquiryRoutes.js";
 import preOrderRoutes from "./routers/preOrderRoutes.js";
+import customerRoutes from "./routers/customerRoutes.js";
 
 dotenv.config();
 const corsOptions = {
@@ -36,6 +37,7 @@ app.use("/order", orderRoute)
 app.use("/product", adminRoutes)
 app.use('/user', userRoutes)
 app.use('/pre', preOrderRoutes)
+app.use('/customer',customerRoutes)
 
 app.listen(port, () => {
   console.log(`server started at port number  ${port}`)
