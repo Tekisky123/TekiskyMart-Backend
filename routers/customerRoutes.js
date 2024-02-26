@@ -1,10 +1,16 @@
-import { addCustomerNumberController ,updateCustomer,deleteCustomer,getAllDetails} from "../controllers/customerController.js";
+import {
+  addCustomerNumberController,
+  updateCustomer,
+  deleteCustomer,
+  getAllDetails,
+} from "../controllers/customerController.js";
 import express from "express";
+import authenticateToken from "../authentication/userAuth.js";
 
 let customerRoutes = express.Router();
 
-customerRoutes.post("/number", addCustomerNumberController);
-customerRoutes.put("/update/:id",updateCustomer);
-customerRoutes.delete("/:id",deleteCustomer)
-customerRoutes.get("/allCustomerDetails",getAllDetails)
+customerRoutes.post("/number", authenticateToken, addCustomerNumberController);
+customerRoutes.put("/update/:id", authenticateToken, updateCustomer);
+customerRoutes.delete("/:id", authenticateToken, deleteCustomer);
+customerRoutes.get("/allCustomerDetails", authenticateToken, getAllDetails);
 export default customerRoutes;
