@@ -2,11 +2,12 @@ import CustomerModel from "../models/customerModel.js";
 
 export const addCustomerNumber = async (data) => {
   try {
-    let saveNumber = await CustomerModel(data);
+    let saveNumber = await new  CustomerModel(data);
     saveNumber.save();
     return true;
   } catch (error) {
     console.log("error while adding number ", error.messsage);
+    return false
   }
 };
 

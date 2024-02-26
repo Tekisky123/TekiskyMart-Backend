@@ -9,9 +9,9 @@ export const addCustomerNumberController = async (req, res) => {
   try {
     const status = await addCustomerNumber(req.body);
     if (status) {
-      res.json({ success: true, message: "added successfully" });
+      res.status(200).json({ success: true, message: "added successfully" });
     } else {
-      res.json({ success: false, message: "error while adding successfully" });
+      res.status(401).json({ success: false, message: "error while adding successfully" });
     }
   } catch (error) {
     console.log(error.message);
