@@ -1,13 +1,32 @@
 import CustomerModel from "../models/customerModel.js";
 
-export const addCustomerNumber = async (data) => {
+export const addCustomerNumber = async ({
+  mobileNumber,
+  customerName,
+  category,
+  knownField,
+}) => {
+ 
   try {
-    let saveNumber = await new  CustomerModel(data);
-    saveNumber.save();
-    return true;
+    if (!mobileNumber || !customerName) {
+      throw new Error("Mobile number and customer name are required.");
+    }
+
+    const newCustomer = new CustomerModel({
+      mobileNumber,
+      customerName,
+      category,
+      knownField,
+    });
+
+    await newCustomer.save();
+
+    console.log("Customer added successfully:", newCustomer);
+
+    return newCustomer;
   } catch (error) {
-    console.log("error while adding number ", error.messsage);
-    return false
+    console.error("Error adding customer:", error);
+    throw error; // Re-throw the error for handling in the controller
   }
 };
 
@@ -31,11 +50,11 @@ export const deleteCustomerService = async (id) => {
   }
 };
 
-export const customerDetailsService =async()=>{
-try {
-  const customeDetails =await CustomerModel.find()
-  return customeDetails
-} catch (error) {
-    return error.messsage
-}
-}
+export const customerDetailsService = async () => {
+  try {
+    const customeDetails = await CustomerModel.find();
+    return customeDetails;
+  } catch (error) {
+    return error.messsage;
+  }
+};

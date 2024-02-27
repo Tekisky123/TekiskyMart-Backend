@@ -2,20 +2,45 @@ import {
   addCustomerNumber,
   updateCustomerService,
   deleteCustomerService,
-  customerDetailsService
+  customerDetailsService,
 } from "../services/customerSevices.js";
+import xlsx from "xlsx";
 
 export const addCustomerNumberController = async (req, res) => {
+  const { mobileNumber, customerName } = req.body;
+  console.log(req.body);
   try {
-    const status = await addCustomerNumber(req.body);
-    if (status) {
-      res.status(200).json({ success: true, message: "added successfully" });
-    } else {
-      res.status(401).json({ success: false, message: "error while adding successfully" });
+    if (!req.file) {
+      await addCustomerNumber({
+        mobileNumber,
+        customerName,
+        category,
+        knownField
+      });
+      return res
+        .status(201)
+        .json({ success: true, message: "Data added successfully" });
     }
+    const workbook = xlsx.read(req.file.buffer);
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const data = xlsx.utils.sheet_to_json(sheet);
+
+    for (const row of data) {
+      const { mobileNumber, customerName, } = row;
+      if (mobileNumber == undefined || customerName == undefined) {
+        break;
+      }
+      await addCustomerNumber({
+        mobileNumber,
+        customerName,
+        
+      });
+    }
+
+    res.status(200).json({ success: true, message: "Data added successfully" });
   } catch (error) {
-    console.log(error.message);
-    res.json({ success: false, message: error.message });
+    console.error(error);
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
 
