@@ -3,8 +3,7 @@ import CustomerModel from "../models/customerModel.js";
 export const addCustomerNumber = async ({
   mobileNumber,
   customerName,
-  category,
-  knownField,
+ 
 }) => {
  
   try {
@@ -15,8 +14,7 @@ export const addCustomerNumber = async ({
     const newCustomer = new CustomerModel({
       mobileNumber,
       customerName,
-      category,
-      knownField,
+     
     });
 
     await newCustomer.save();

@@ -8,14 +8,12 @@ import xlsx from "xlsx";
 
 export const addCustomerNumberController = async (req, res) => {
   const { mobileNumber, customerName } = req.body;
-  console.log(req.body);
+  // console.log(req.body);
   try {
     if (!req.file) {
       await addCustomerNumber({
         mobileNumber,
         customerName,
-        category,
-        knownField
       });
       return res
         .status(201)
