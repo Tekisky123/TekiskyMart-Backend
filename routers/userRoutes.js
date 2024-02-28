@@ -18,6 +18,6 @@ userRoutes.post("/updateUser/:id", authenticateToken, updateUserById);
 userRoutes.get("/getUsers", authenticateToken, getUsers);
 userRoutes.get("/deleteUser/:id", authenticateToken, deleteUser);
 userRoutes.get("/getOneUser/:id", authenticateToken, getOneUser);
-userRoutes.get("/logout",logoutUserController)
+userRoutes.get("/logout",authenticateToken,logoutUserController)
 
 export default userRoutes;
