@@ -9,7 +9,7 @@ const adminRoutes = express.Router()
 //Protacted Routes 
 adminRoutes.post('/addproduct',authenticateToken,upload.array('files',5),addProduct)
 adminRoutes.get('/getproduct',authenticateToken,getProduct)
-adminRoutes.put('/update/:id',authenticateToken,updateProduct)
+adminRoutes.put('/update/:id',upload.array('files',5),authenticateToken,updateProduct)
 adminRoutes.get('/delete/:id',authenticateToken,deleteProduct)
 // Public Routes
 adminRoutes.get('/getoneproduct/:id',getOneProduct)

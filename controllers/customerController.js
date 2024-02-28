@@ -24,14 +24,13 @@ export const addCustomerNumberController = async (req, res) => {
     const data = xlsx.utils.sheet_to_json(sheet);
 
     for (const row of data) {
-      const { mobileNumber, customerName, } = row;
+      const { mobileNumber, customerName } = row;
       if (mobileNumber == undefined || customerName == undefined) {
         break;
       }
       await addCustomerNumber({
         mobileNumber,
         customerName,
-        
       });
     }
 
